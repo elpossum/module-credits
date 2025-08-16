@@ -1,10 +1,11 @@
 {
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -wcm"
+    "build": "vite build",
+    "serve": "vite"
   },
+  "type": "module",
   "devDependencies": {
-    "rollup": "^3.7.2",
-    "rollup-terser": "^1.0.3"
+    "vite": "^7.1.2",
+    "vite-plugin-static-copy": "^3.1.1"
   }
 }
