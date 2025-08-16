@@ -1,5 +1,5 @@
 // GET REQUIRED LIBRARIES
-import "tippy.js";
+import tippy from "tippy.js";
 import { PublicGoogleSheetsParser } from "public-google-sheets-parser";
 
 // GET MODULE CORE
