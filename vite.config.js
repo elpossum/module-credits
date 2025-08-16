@@ -34,18 +34,6 @@ const config = defineConfig(({ command }) => {
               src: "LICENSE",
               dest: ".",
             },
-            {
-              src: "languages",
-              dest: "."
-            },
-            {
-              src: "styles",
-              dest: "."
-            },
-            {
-              src: "templates",
-              dest: "."
-            },
           ],
         }),
       ]);
@@ -58,9 +46,9 @@ const config = defineConfig(({ command }) => {
           handleHotUpdate({file, server}) {
             if (file.startsWith("dist")) return;
 
-            if (file.includes("lang/") && file.endsWith(".json")) {
+            if (file.includes("languages/") && file.endsWith(".json")) {
               const basePath = file.slice(
-                file.indexOf("lang/"),
+                file.indexOf("languages/"),
               );
               server.hot.send({
                 type: "custom",
@@ -87,6 +75,7 @@ const config = defineConfig(({ command }) => {
 
   return {
     base: command === "serve" ? "/modules/module-credits/" : "./",
+    publicDir: "static",
     server: {
       port: 30001,
       open: "/",
@@ -102,13 +91,15 @@ const config = defineConfig(({ command }) => {
       sourcemap: true,
       minify: false,
       lib: {
-        entry: "scripts/init.mjs",
+        entry: "src/scripts/init.mjs",
         formats: ["es"],
         fileName: "init",
       },
       rollupOptions: {
         output: {
-          entryFileNames: "scripts/bundle.min.mjs",
+          entryFileNames: "bundle.min.mjs",
+          chunkFileNames: "[name].mjs",
+          assetFileNames: "styles/module.css",
           sourcemapExcludeSources: true,
         },
       },

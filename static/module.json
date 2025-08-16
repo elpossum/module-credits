@@ -79,7 +79,7 @@
 		}
 	},
 	"esmodules": [
-		"/scripts/init.mjs"
+		"/bundle.min.mjs"
 	],
 	"scripts": [],
 	"styles": [
