@@ -1,5 +1,6 @@
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { defineConfig, transformWithEsbuild } from "vite";
+import fs from "fs-extra";
 
 const config = defineConfig(({ command }) => {
   const plugins = [];
@@ -43,28 +44,28 @@ const config = defineConfig(({ command }) => {
         {
           name: "handlebars-json-hmr",
           apply: "serve",
-          handleHotUpdate({file, server}) {
+          handleHotUpdate({ file, server }) {
             if (file.startsWith("dist")) return;
 
             if (file.includes("languages/") && file.endsWith(".json")) {
-              const basePath = file.slice(
-                file.indexOf("languages/"),
-              );
-              server.hot.send({
-                type: "custom",
-                event: "lang-update",
-                data: { path: `modules/module-credits/${basePath}` },
+              const basePath = file.slice(file.indexOf("languages/"));
+              fs.promises.copyFile(file, `dist/${basePath}`).then(() => {
+                server.hot.send({
+                  type: "custom",
+                  event: "lang-update",
+                  data: { path: `modules/module-credits/${basePath}` },
+                });
               });
             }
 
             if (file.includes("templates/") && file.endsWith(".hbs")) {
-              const basePath = file.slice(
-                file.indexOf("templates/"),
-              );
-              server.hot.send({
-                type: "custom",
-                event: "template-update",
-                data: { path: `modules/module-credits/${basePath}` },
+              const basePath = file.slice(file.indexOf("templates/"));
+              fs.promises.copyFile(file, `dist/${basePath}`).then(() => {
+                server.hot.send({
+                  type: "custom",
+                  event: "template-update",
+                  data: { path: `modules/module-credits/${basePath}` },
+                });
               });
             }
           },
