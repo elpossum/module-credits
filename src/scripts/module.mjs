@@ -1,7 +1,6 @@
 // GET REQUIRED LIBRARIES
-import "./libraries/popper.min.js";
-import "./libraries/tippy.umd.min.js";
-import "./libraries/public-google-sheets-parser.min.js";
+import "tippy.js";
+import { PublicGoogleSheetsParser } from "public-google-sheets-parser";
 
 // GET MODULE CORE
 import { MODULE } from "./_module.mjs";
