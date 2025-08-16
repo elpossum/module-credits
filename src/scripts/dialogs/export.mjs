@@ -19,7 +19,7 @@ export class ExportDialog extends FormApplication {
     });
 
     // Get Module Settings
-    for (const [key, setting] of game.settings.settings) {
+    for (const setting of game.settings.settings.values()) {
       if (Object.hasOwn(moduleData, setting.namespace)) {
         if (
           !Object.hasOwn(moduleData[setting.namespace].settings, setting.scope)
@@ -61,7 +61,7 @@ export class ExportDialog extends FormApplication {
         let markdown = [
           `### ${MODULE.localize("dialog.generic.activeModules")}`,
         ];
-        for (const [key, value] of Object.entries(this.moduleData)) {
+        for (const value of Object.values(this.moduleData)) {
           markdown.push(
             `${value.title} v${value.version}` +
               (value.bugs
@@ -79,7 +79,7 @@ export class ExportDialog extends FormApplication {
 
     $(html)
       .find('[data-button="copy"]')
-      .on("click", (event) => {
+      .on("click", () => {
         $(html).find(`#${MODULE.ID}-copy-export`).select();
         document.execCommand("copy");
         ui.notifications.info(
@@ -89,7 +89,7 @@ export class ExportDialog extends FormApplication {
 
     $(html)
       .find('[data-button="export"]')
-      .on("click", (event) => {
+      .on("click", () => {
         saveDataToFile(
           JSON.stringify(this.moduleData, null, 4),
           "application/json",

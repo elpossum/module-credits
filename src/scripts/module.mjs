@@ -13,7 +13,6 @@ import { PresetDialog } from "./dialogs/presets.mjs";
 export class MMP {
   static socket = false;
   static #LockedSettings = {};
-  static #GlobalConflicts = [];
 
   /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
   // MODULE SUPPORT CODE
@@ -153,7 +152,7 @@ export class MMP {
       });
   }
 
-  static async useFetch(url, options = {}) {
+  static async useFetch(url) {
     return await fetch(url)
       .then((response) => {
         if (response.status >= 200 && response.status <= 299) {
@@ -161,7 +160,7 @@ export class MMP {
         }
         throw TypeError("unable to fetch file content");
       })
-      .then((data) => {
+      .then(() => {
         return url;
       })
       .catch((error) => {
@@ -225,7 +224,7 @@ export class MMP {
           if (response.status >= 200 && response.status <= 299) {
             try {
               return response.json();
-            } catch (error) {
+            } catch {
               throw TypeError("unable to fetch file content");
             }
           }
@@ -466,7 +465,7 @@ export class MMP {
       .appendTo($(elements).parent());
   }
 
-  static async renderModuleManagement(app, elem, options) {
+  static async renderModuleManagement(app, elem) {
     // Supported Remote APIs
     const APIs = {
       github:
@@ -504,7 +503,7 @@ export class MMP {
       );
       elem
         .querySelector('nav.list-filters button[data-action="presets"]')
-        .addEventListener("click", (event) => {
+        .addEventListener("click", () => {
           new PresetDialog().render(true);
         });
 
@@ -517,7 +516,7 @@ export class MMP {
       );
       elem
         .querySelector('nav.list-filters button[data-action="export"]')
-        .addEventListener("click", (event) => {
+        .addEventListener("click", () => {
           new ExportDialog(
             elem.querySelectorAll("#module-list li.package"),
           ).render(true);
@@ -533,7 +532,7 @@ export class MMP {
       );
       elem
         .querySelector('nav.list-filters button[data-action="import"]')
-        .addEventListener("click", (event) => {
+        .addEventListener("click", () => {
           $('<input type="file">')
             .on("change", (event) => {
               const fileData = event.target.files[0];
@@ -558,7 +557,7 @@ export class MMP {
                   // Check if Import is for TidyUI
                   if (Object.hasOwn(responseJSON, "activeModules") ?? false) {
                     importType = "tidy-ui_game-settings";
-                    responseJSON.activeModules.forEach((module, index) => {
+                    responseJSON.activeModules.forEach((module) => {
                       moduleData[module.id] = {
                         title: module.title,
                         version: module.version,
@@ -625,9 +624,7 @@ export class MMP {
                 elemPackage.classList.add("hidden");
               });
 
-            for (const [key, value] of Object.entries(
-              MODULE.setting("lockedModules"),
-            )) {
+            for (const key of Object.keys(MODULE.setting("lockedModules"))) {
               elem
                 .querySelector(
                   `.package-list .package[data-module-id="${key}"]`,
@@ -869,8 +866,6 @@ export class MMP {
             file.toLowerCase().endsWith("ATTRIBUTIONS.md".toLowerCase()),
           )[0]
         : false;
-      // Get License File
-      let license = false; // Foundry File Picker Does not Display this File
 
       // Add Ability to Rename Package Title for Better Sorting
       new ContextMenu($(elemPackage), ".package-overview ", [
@@ -902,7 +897,7 @@ export class MMP {
                       },
                       { inplace: false },
                     ),
-                  ).then((response) => {
+                  ).then(() => {
                     new ModuleManagement().render(true);
                   });
                 }
@@ -910,7 +905,7 @@ export class MMP {
               no: () => {
                 return false;
               },
-            }).then((response) => {});
+            }).then(() => {});
           },
         },
         {
@@ -919,14 +914,12 @@ export class MMP {
           condition:
             game.user.isGM &&
             (MODULE.setting("renamedModules")[moduleKey] ?? false),
-          callback: (packageElem) => {
+          callback: () => {
             let renamedModules = MODULE.setting("renamedModules");
             delete renamedModules[moduleKey];
-            MODULE.setting("renamedModules", renamedModules).then(
-              (response) => {
-                new ModuleManagement().render(true);
-              },
-            );
+            MODULE.setting("renamedModules", renamedModules).then(() => {
+              new ModuleManagement().render(true);
+            });
           },
         },
         {
@@ -940,7 +933,7 @@ export class MMP {
           callback: (packageElem) => {
             let lockedModules = MODULE.setting("lockedModules");
             lockedModules[moduleKey] = true;
-            MODULE.setting("lockedModules", lockedModules).then((response) => {
+            MODULE.setting("lockedModules", lockedModules).then(() => {
               packageElem[0]
                 .querySelector('.package-title input[type="checkbox"]')
                 .insertAdjacentHTML(
@@ -986,7 +979,7 @@ export class MMP {
           callback: (packageElem) => {
             let lockedModules = MODULE.setting("lockedModules");
             delete lockedModules[moduleKey];
-            MODULE.setting("lockedModules", lockedModules).then((response) => {
+            MODULE.setting("lockedModules", lockedModules).then(() => {
               packageElem[0]
                 .querySelector(".package-title i.fa-duotone.fa-lock")
                 .remove();
@@ -1024,7 +1017,7 @@ export class MMP {
             const moduleDetails = game.modules.get(
               packageElem[0].closest("li").dataset.moduleId,
             );
-            Hooks.once("renderBugReportForm", (app, elem, options) => {
+            Hooks.once("renderBugReportForm", (app, elem) => {
               elem = elem[0];
 
               // Add Confliction Package Dropdown
@@ -1182,7 +1175,7 @@ export class MMP {
 
               elem
                 .querySelector('button[data-type="submit"]')
-                .addEventListener("click", (event) => {
+                .addEventListener("click", () => {
                   const elemTextarea = elem.querySelector(
                     'textarea[name="formFields.bugDescription"]',
                   );
@@ -1258,7 +1251,6 @@ export class MMP {
 					<i class="fa-solid ${moduleData?.authors.size == 1 ? "fa-user" : "fa-users"}"></i>
 				</span>`,
         );
-        let elements = [];
         let outputList = "";
         moduleData?.authors.forEach((author) => {
           outputList += `<li class="author">${author?.name ?? "UNKNOWN"}</li>`;
@@ -1344,7 +1336,7 @@ export class MMP {
         );
         elemPackage
           .querySelector(".package-overview span.tag.readme")
-          .addEventListener("click", (event) => {
+          .addEventListener("click", () => {
             new PreviewDialog({
               [moduleKey]: {
                 hasSeen: false,
@@ -1375,7 +1367,7 @@ export class MMP {
         );
         elemPackage
           .querySelector(".package-overview span.tag.changelog")
-          .addEventListener("click", (event) => {
+          .addEventListener("click", () => {
             new PreviewDialog({
               [moduleKey]: {
                 hasSeen: false,
@@ -1406,7 +1398,7 @@ export class MMP {
         );
         elemPackage
           .querySelector(".package-overview span.tag.attributions")
-          .addEventListener("click", (event) => {
+          .addEventListener("click", () => {
             new PreviewDialog({
               [moduleKey]: {
                 hasSeen: false,
@@ -1612,7 +1604,7 @@ export class MMP {
           );
         elem
           .querySelector('footer button[name="global-conflicts-spreadsheet"]')
-          .addEventListener("click", (event) => {
+          .addEventListener("click", () => {
             window.open(
               "https://docs.google.com/spreadsheets/d/1eRcaqt8VtgDRC-iWP3SfOnXh-7kIw2k7po9-3dcftAk/",
               "_blank",
@@ -1627,7 +1619,7 @@ export class MMP {
         "#module-list > li.package .package-overview .tag.settings",
       )
       .forEach((elemPackage) => {
-        elemPackage.addEventListener("click", async (pointerEventData) => {
+        elemPackage.addEventListener("click", async () => {
           await game.settings.sheet._render(true);
           let moduleId = elemPackage.closest("li.package").dataset.moduleId;
           let settingSheet = Object.values(ui.windows).find(
@@ -1647,7 +1639,7 @@ export class MMP {
         "#module-list > li.package .package-overview .tag.issues.bug-reporter",
       )
       .forEach((elemPackage) => {
-        elemPackage.addEventListener("click", async (pointerEventData) => {
+        elemPackage.addEventListener("click", async () => {
           let moduleId = elemPackage.closest("li.package").dataset.moduleId;
           game.modules.get("bug-reporter").api.bugWorkflow(moduleId);
         });
@@ -1676,9 +1668,7 @@ export class MMP {
             ).forEach((elemPackage) => {
               elemPackage.classList.remove("checked");
             });
-            for (const [key, value] of Object.entries(
-              MODULE.setting("lockedModules"),
-            )) {
+            for (const key of Object.keys(MODULE.setting("lockedModules"))) {
               elem.querySelector(
                 `.package-list .package[data-module-id="${key}"] input[type="checkbox"]`,
               ).checked = true;
@@ -1708,7 +1698,7 @@ export class MMP {
 
         elem
           .querySelector('footer button[name="rollback"]')
-          .addEventListener("click", (event) => {
+          .addEventListener("click", () => {
             let rollBackModules = [...MODULE.setting("presetsRollbacks")].pop();
             Dialog.confirm({
               id: `${MODULE.ID}-rollback-modules`,
@@ -1722,30 +1712,30 @@ export class MMP {
                   (game.modules.get(key)?.title ?? "") != "" && value != false
                 );
               })
-              .map(([key, value]) => {
-                return game.modules.get(key)?.title;
+              .map((module) => {
+                return game.modules.get(module[0])?.title;
               })
               .join("\n")}</textarea>`,
-              yes: (elemDialog) => {
+              yes: () => {
                 // Update Modules and Reload Game
-                MODULE.setting("storedRollback", {}).then((response) => {
+                MODULE.setting("storedRollback", {}).then(() => {
                   game.settings
                     .set(
                       `core`,
                       `${ModuleManagement.CONFIG_SETTING}`,
                       rollBackModules,
                     )
-                    .then((response) => {
+                    .then(() => {
                       MODULE.setting(
                         "presetsRollbacks",
                         MODULE.setting("presetsRollbacks").slice(0, -1) ?? [],
-                      ).then((response) => {
+                      ).then(() => {
                         SettingsConfig.reloadConfirm({ world: true });
                       });
                     });
                 });
               },
-              no: (elemDialog) => {
+              no: () => {
                 return false;
               },
             });
@@ -1754,7 +1744,7 @@ export class MMP {
     }
 
     // HIDE TOOLTIPS WHEN USER SCROLLS IN MODULE LIST
-    $("#module-management #module-list").on("scroll", (event) => {
+    $("#module-management #module-list").on("scroll", () => {
       tippy.hideAll();
     });
 
@@ -1762,7 +1752,7 @@ export class MMP {
     app.setPosition();
   }
 
-  static renderSettingsConfig = (app, elem, options) => {
+  static renderSettingsConfig = (app, elem) => {
     // Set elem to first element
     elem = elem[0];
 
@@ -1815,7 +1805,7 @@ export class MMP {
 
               settingLabel
                 .querySelector('[data-action="sync"]')
-                .addEventListener("click", (event) => {
+                .addEventListener("click", () => {
                   Dialog.confirm({
                     title: MODULE.TITLE,
                     content: `<p style="margin-top:0px;">${MODULE.localize("dialog.clientSettings.syncSetting.sendToAll")}</p>`,
@@ -1843,7 +1833,7 @@ export class MMP {
                       name: user.name,
                       icon: "",
                       condition: game.user.isGM,
-                      callback: (elem) => {
+                      callback: () => {
                         MODULE.log(
                           "Setting Client Setting",
                           this.socket.executeAsUser("setUserSetting", user.id, {
@@ -1877,11 +1867,11 @@ export class MMP {
               );
               settingLabel
                 .querySelector('[data-action="lock"]')
-                .addEventListener("click", (event) => {
+                .addEventListener("click", () => {
                   if (isLocked(settingID)) {
                     delete MMP.#LockedSettings[`${settingID}`];
                     MODULE.setting("lockedSettings", MMP.#LockedSettings).then(
-                      (response) => {
+                      () => {
                         settingLabel
                           .querySelector('[data-action="lock"]')
                           .classList.remove("fa-lock");
@@ -1902,7 +1892,7 @@ export class MMP {
                     );
 
                     MODULE.setting("lockedSettings", MMP.#LockedSettings).then(
-                      (response) => {
+                      () => {
                         settingLabel
                           .querySelector('[data-action="lock"]')
                           .classList.remove("fa-unlock");
@@ -1951,7 +1941,7 @@ export class MMP {
       });
   };
 
-  static async renderApplication(app, elem, options) {
+  static async renderApplication(app, elem) {
     elem = elem[0];
 
     if (app.id == "client-settings") {
@@ -2020,9 +2010,9 @@ export class MMP {
     }
   }
 
-  static async closeSettingsConfig(app, elem) {
+  static async closeSettingsConfig() {
     if (game.user.isGM) {
-      for (const [key, value] of Object.entries(MMP.#LockedSettings)) {
+      for (const key of Object.keys(MMP.#LockedSettings)) {
         const settingDetails = game.settings.settings.get(key);
 
         // Check if Setting is Still Valid, Otherwise Remove it from the Locked Settings
@@ -2037,13 +2027,13 @@ export class MMP {
         }
       }
 
-      MODULE.setting("lockedSettings", MMP.#LockedSettings).then((response) => {
+      MODULE.setting("lockedSettings", MMP.#LockedSettings).then(() => {
         MODULE.log("UPDATED LOCKED SETTINGS", MMP.#LockedSettings);
       });
     }
   }
 
-  static async renderSidebarTab(app, elem, options) {
+  static async renderSidebarTab(app, elem) {
     if (app.options.id == "settings") {
       // Supported Remote APIs
       const APIs = {
@@ -2067,7 +2057,7 @@ export class MMP {
           .querySelector(
             '#settings-documentation button[data-action="changelogs"]',
           )
-          .addEventListener("click", async (event) => {
+          .addEventListener("click", async () => {
             let changelogs = await (!game.user.isGM
               ? MMP.socket.executeAsGM("getGMSetting", {
                   moduleId: MODULE.ID,
@@ -2156,7 +2146,7 @@ export class MMP {
             .querySelector(
               '#game-details li.system-buttons button[data-action="readme"]',
             )
-            .addEventListener("click", (event) => {
+            .addEventListener("click", () => {
               new PreviewDialog({
                 [game.system.id]: {
                   hasSeen: false,
@@ -2187,7 +2177,7 @@ export class MMP {
             .querySelector(
               '#game-details li.system-buttons button[data-action="changelog"]',
             )
-            .addEventListener("click", (event) => {
+            .addEventListener("click", () => {
               new PreviewDialog({
                 [game.system.id]: {
                   hasSeen: false,
@@ -2220,7 +2210,7 @@ export class MMP {
             .querySelector(
               '#game-details li.system-buttons button[data-action="attributions"]',
             )
-            .addEventListener("click", (event) => {
+            .addEventListener("click", () => {
               new PreviewDialog({
                 [game.system.id]: {
                   hasSeen: false,

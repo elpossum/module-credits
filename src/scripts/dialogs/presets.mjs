@@ -2,7 +2,7 @@
 import { MODULE } from "../_module.mjs";
 
 export class PresetDialog extends FormApplication {
-  constructor(packages) {
+  constructor() {
     super();
   }
 
@@ -97,13 +97,13 @@ export class PresetDialog extends FormApplication {
               return module.title;
             })
             .join("\n")}</textarea>`,
-        yes: (elemDialog) => {
+        yes: () => {
           presets[presetKey].modules = presetPackages;
           MODULE.setting("presets", presets).then((response) => {
             MODULE.log("UPDATE", response);
           });
         },
-        no: (elemDialog) => {
+        no: () => {
           return false;
         },
       });
@@ -117,13 +117,13 @@ export class PresetDialog extends FormApplication {
         title: MODULE.TITLE,
         content: `<p style="margin-top: 0px;">${MODULE.localize("dialog.presets.delete.description", { name: presets[presetKey].name })}</p>
 					<div class="notification warning">${MODULE.localize("dialog.presets.delete.warning")}</div>`,
-        yes: (elemDialog) => {
+        yes: () => {
           delete presets[presetKey];
-          MODULE.setting("presets", presets).then((response) => {
+          MODULE.setting("presets", presets).then(() => {
             event.target.closest("li").remove();
           });
         },
-        no: (elemDialog) => {
+        no: () => {
           return false;
         },
       });
@@ -148,7 +148,7 @@ export class PresetDialog extends FormApplication {
             return module.title;
           })
           .join("\n")}</textarea>`,
-        yes: (elemDialog) => {
+        yes: () => {
           // Disable All Modules
           for (const property in moduleStates) moduleStates[property] = false;
 
@@ -164,11 +164,11 @@ export class PresetDialog extends FormApplication {
             MODULE.setting("storedRollback", {});
           game.settings
             .set("core", ModuleManagement.CONFIG_SETTING, moduleStates)
-            .then((response) => {
+            .then(() => {
               SettingsConfig.reloadConfirm({ world: true });
             });
         },
-        no: (elemDialog) => {
+        no: () => {
           return false;
         },
       });
@@ -199,7 +199,7 @@ export class PresetDialog extends FormApplication {
     // Create a New Preset
     html[html.length - 1]
       .querySelector('.dialog-buttons button[data-action="create"]')
-      .addEventListener("click", (event) => {
+      .addEventListener("click", () => {
         const packages = document.querySelectorAll(
           "#module-management #module-list li.package",
         );
@@ -250,7 +250,7 @@ export class PresetDialog extends FormApplication {
                 },
                 { inplace: false },
               ),
-            ).then((response) => {
+            ).then(() => {
               html[0]
                 .querySelector(`#${MODULE.ID}-presets-list`)
                 .insertAdjacentHTML(
@@ -314,7 +314,7 @@ export class PresetDialog extends FormApplication {
                 .focus();
             }, 1);
           },
-        }).then((response) => {});
+        }).then(() => {});
       });
   }
 }

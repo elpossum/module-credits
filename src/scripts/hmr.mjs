@@ -1,7 +1,7 @@
 /** Not an actual hook listener but rather things to run on initial load */
 export const Load = {
   listen() {
-    function rerenderApps(path) {
+    function rerenderApps() {
       [
         ...Object.values(ui.windows),
         ...foundry.applications.instances.values(),

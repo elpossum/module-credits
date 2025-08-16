@@ -2,8 +2,6 @@
 import { MODULE } from "./_module.mjs";
 
 Hooks.once("ready", async () => {
-  const moduleDetails = game.modules.get(MODULE.ID);
-
   if (
     foundry.utils.isNewerVersion(
       "2.0.4",
@@ -21,9 +19,7 @@ Hooks.once("ready", async () => {
     );
 
     let newLockedSettings = {};
-    for (const [key, value] of Object.entries(
-      MODULE.setting("lockedSettings"),
-    )) {
+    for (const key of Object.keys(MODULE.setting("lockedSettings"))) {
       const settingDetails = game.settings.settings.get(key.replace("_", "."));
 
       if (
@@ -37,14 +33,14 @@ Hooks.once("ready", async () => {
       }
     }
 
-    MODULE.setting("lockedSettings", newLockedSettings).then((response) => {
+    MODULE.setting("lockedSettings", newLockedSettings).then(() => {
       Dialog.prompt({
         id: `${MODULE.ID}-migration-complete`,
         title: MODULE.TITLE,
         content: `<p>${MODULE.localize("migration.v204.complete")}</p>`,
         callback: () => {
-          MODULE.setting("clientMigratedVersion", "2.0.4").then((response) => {
-            MODULE.setting("worldMigratedVersion", "2.0.4").then((response) => {
+          MODULE.setting("clientMigratedVersion", "2.0.4").then(() => {
+            MODULE.setting("worldMigratedVersion", "2.0.4").then(() => {
               location.reload();
             });
           });

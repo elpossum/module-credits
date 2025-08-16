@@ -294,6 +294,6 @@ Hooks.once("ready", async () => {
 Hooks.on("renderModuleManagement", MMP.renderModuleManagement);
 Hooks.on("renderSettingsConfig", MMP.renderSettingsConfig);
 
-Handlebars.registerHelper("incIndex", function (value, options) {
+Handlebars.registerHelper("incIndex", function (value) {
   return parseInt(value) + 1;
 });

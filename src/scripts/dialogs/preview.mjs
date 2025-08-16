@@ -124,7 +124,7 @@ export class PreviewDialog extends FormApplication {
     const collapseElem = html[0].querySelector(
       "aside.sidebar .directory-header a.action-button.collapse-toggle",
     );
-    collapseElem.addEventListener("click", (event) => {
+    collapseElem.addEventListener("click", () => {
       const app = html[0].closest(".app");
       const sidebar = app.querySelector(".sidebar");
       const button = sidebar.querySelector(".collapse-toggle");
@@ -213,7 +213,7 @@ export class PreviewDialog extends FormApplication {
       'aside.sidebar .action-buttons button[data-action="previous"]',
     );
 
-    nextButton.addEventListener("click", (event) => {
+    nextButton.addEventListener("click", () => {
       html[0]
         .querySelector(
           "aside.sidebar nav ol.directory-list li.directory-item.active",
@@ -221,7 +221,7 @@ export class PreviewDialog extends FormApplication {
         .nextElementSibling.querySelector(".page-title")
         .click();
     });
-    previousButton.addEventListener("click", (event) => {
+    previousButton.addEventListener("click", () => {
       html[0]
         .querySelector(
           "aside.sidebar nav ol.directory-list li.directory-item.active",
@@ -235,7 +235,7 @@ export class PreviewDialog extends FormApplication {
       'aside.sidebar .action-buttons button[data-action="markAsSeen"]',
     );
 
-    markAsSeen.addEventListener("click", (event) => {
+    markAsSeen.addEventListener("click", () => {
       let trackedChangelogs = MODULE.setting("trackedChangelogs");
       for (let key in trackedChangelogs) {
         trackedChangelogs[key].hasSeen = true;

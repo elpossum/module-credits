@@ -1,9 +1,6 @@
 // GET MODULE CORE
 import { MODULE } from "./_module.mjs";
 
-// GET CORE MODULE
-import { MMP } from "./module.mjs";
-
 // FOUNDRY HOOKS -> SETUP
 Hooks.once("setup", () => {
   // SET MODULE MIGRATE SETTINGS
@@ -245,7 +242,7 @@ Hooks.once("setup", () => {
     foundry.utils.mergeObject(
       game.settings.settings.get(`core.${ModuleManagement.CONFIG_SETTING}`),
       {
-        onChange: (moduleManagementData) => {
+        onChange: () => {
           if (!foundry.utils.isEmpty(MODULE.setting("storedRollback"))) {
             let rollbacks = MODULE.setting("presetsRollbacks") ?? [];
             rollbacks.push(MODULE.setting("storedRollback"));

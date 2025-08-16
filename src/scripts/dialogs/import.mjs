@@ -6,7 +6,7 @@ export class ImportDialog extends FormApplication {
     super();
 
     // Format Module Data
-    for (const [key, module] of Object.entries(moduleData)) {
+    for (const key of Object.keys(moduleData)) {
       moduleData[key].isInstalled = game.modules.has(key) ?? false;
       /*moduleData[key].isNewerVersion = isNewerVersion(module?.version ?? "0.0.0", game.modules.get(key)?.data?.version ?? "0.0.0");
 			moduleData[key].isCurrentVersion = !moduleData[key].isNewerVersion && (module?.version ?? "0.0.0") == (game.modules.get(key)?.data?.version ?? "0.0.0");
@@ -49,7 +49,7 @@ export class ImportDialog extends FormApplication {
   }
 
   processSettingData(moduleID, type, settings) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       for (const [key, setting] of Object.entries(settings)) {
         if (type == "client") {
           game.settings.storage
@@ -111,7 +111,7 @@ export class ImportDialog extends FormApplication {
     // Handle When User Changes Import Checkbox State
     $(html)
       .find('li[data-module] input[name="import-module"]:not([disabled])')
-      .on("change", (event) => {
+      .on("change", () => {
         enabledModulesToImport = $(html).find(
           'li[data-module] input[name="import-module"]:not([disabled]):checked',
         ).length;
@@ -144,7 +144,7 @@ export class ImportDialog extends FormApplication {
       .find(
         'li[data-module] input[name="import-settings-client"]:not([disabled])',
       )
-      .on("change", (event) => {
+      .on("change", () => {
         enabledClientSettingsToImport = $(html).find(
           'li[data-module] input[name="import-settings-client"]:not([disabled]):checked',
         ).length;
@@ -184,7 +184,7 @@ export class ImportDialog extends FormApplication {
       .find(
         'li[data-module] input[name="import-settings-world"]:not([disabled])',
       )
-      .on("change", (event) => {
+      .on("change", () => {
         enabledWorldSettingsToImport = $(html).find(
           'li[data-module] input[name="import-settings-world"]:not([disabled]):checked',
         ).length;
@@ -314,12 +314,12 @@ export class ImportDialog extends FormApplication {
             }
           });
 
-        Promise.allSettled(settingsCalls).then((response) => {
+        Promise.allSettled(settingsCalls).then(() => {
           if (!MODULE.setting("storePreviousOnPreset"))
             MODULE.setting("storedRollback", {});
           game.settings
             .set("core", ModuleManagement.CONFIG_SETTING, moduleStates)
-            .then((response) => {
+            .then(() => {
               SettingsConfig.reloadConfirm({ world: true });
             });
         });
