@@ -128,12 +128,12 @@ Hooks.once("ready", async () => {
           return filtered.concat([]);
 
         // Check if Requirement is Locked
-        //if (!input.checked && (MODULE.setting('lockedModules').hasOwnProperty(requirement.id) ?? false)) return filtered.concat([]);
+        //if (!input.checked && (Object.hasOwn(MODULE.setting('lockedModules'), requirement.id) ?? false)) return filtered.concat([]);
 
         MODULE.log(
           input.checked,
           !(
-            MODULE.setting("lockedModules").hasOwnProperty(requirement.id) ??
+            Object.hasOwn(MODULE.setting("lockedModules"), requirement.id) ??
             false
           ),
         );
@@ -145,7 +145,8 @@ Hooks.once("ready", async () => {
               isChecked: () => {
                 if (input.checked) return true;
                 return !(
-                  MODULE.setting("lockedModules").hasOwnProperty(
+                  Object.hasOwn(
+                    MODULE.setting("lockedModules"),
                     requirement.id,
                   ) ?? false
                 );
@@ -153,7 +154,8 @@ Hooks.once("ready", async () => {
               isDisabled: () => {
                 if (
                   MODULE.setting("disableLockedModules") &&
-                  (MODULE.setting("lockedModules").hasOwnProperty(
+                  (Object.hasOwn(
+                    MODULE.setting("lockedModules"),
                     requirement.id,
                   ) ??
                     false)

@@ -20,9 +20,9 @@ export class ExportDialog extends FormApplication {
 
     // Get Module Settings
     for (const [key, setting] of game.settings.settings) {
-      if (moduleData.hasOwnProperty(setting.namespace)) {
+      if (Object.hasOwn(moduleData, setting.namespace)) {
         if (
-          !moduleData[setting.namespace].settings.hasOwnProperty(setting.scope)
+          !Object.hasOwn(moduleData[setting.namespace].settings, setting.scope)
         ) {
           moduleData[setting.namespace].settings[setting.scope] = {};
         }

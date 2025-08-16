@@ -556,7 +556,7 @@ export class MMP {
                   let importType = MODULE.ID;
 
                   // Check if Import is for TidyUI
-                  if (responseJSON.hasOwnProperty("activeModules") ?? false) {
+                  if (Object.hasOwn(responseJSON, "activeModules") ?? false) {
                     importType = "tidy-ui_game-settings";
                     responseJSON.activeModules.forEach((module, index) => {
                       moduleData[module.id] = {
@@ -569,9 +569,10 @@ export class MMP {
                       };
                     });
                   } else if (
-                    responseJSON?.[
-                      Object.keys(responseJSON)[0]
-                    ]?.hasOwnProperty("title") ??
+                    Object.hasOwn(
+                      responseJSON?.[Object.keys(responseJSON)[0]],
+                      "title",
+                    ) ??
                     false
                   ) {
                     moduleData = responseJSON;
@@ -695,7 +696,7 @@ export class MMP {
           value
             .match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)\./i)[1]
             ?.toLowerCase() ?? value;
-        const tagType = supportedAuthorTags.hasOwnProperty(domain)
+        const tagType = Object.hasOwn(supportedAuthorTags, domain)
           ? domain
           : key;
         const urlDisplay =
@@ -935,7 +936,7 @@ export class MMP {
           icon: '<i class="fa-duotone fa-lock"></i>',
           condition: () =>
             game.user.isGM &&
-            !MODULE.setting("lockedModules").hasOwnProperty(moduleKey),
+            !Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
           callback: (packageElem) => {
             let lockedModules = MODULE.setting("lockedModules");
             lockedModules[moduleKey] = true;
@@ -981,7 +982,7 @@ export class MMP {
           icon: '<i class="fa-duotone fa-lock-open"></i>',
           condition: () =>
             game.user.isGM &&
-            MODULE.setting("lockedModules").hasOwnProperty(moduleKey),
+            Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
           callback: (packageElem) => {
             let lockedModules = MODULE.setting("lockedModules");
             delete lockedModules[moduleKey];
@@ -1523,7 +1524,7 @@ export class MMP {
         });
 
       // Add Locked Status
-      if (MODULE.setting("lockedModules").hasOwnProperty(moduleKey) ?? false) {
+      if (Object.hasOwn(MODULE.setting("lockedModules"), moduleKey) ?? false) {
         elemPackage
           .querySelector(
             '.package-overview .package-title input[type="checkbox"]',
@@ -1794,7 +1795,8 @@ export class MMP {
           // Lock Settings
           const isLocked = (settingID) => {
             return (
-              MMP.#LockedSettings.hasOwnProperty(
+              Object.hasOwn(
+                MMP.#LockedSettings,
                 `${settingID ?? "MMP-INVALID"}`,
               ) ?? false
             );
@@ -1978,7 +1980,8 @@ export class MMP {
             // Lock Settings
             const isLocked = (settingID) => {
               return (
-                MODULE.setting("lockedSettings").hasOwnProperty(
+                Object.hasOwn(
+                  MODULE.setting("lockedSettings"),
                   `${settingID ?? "MMP-INVALID"}`,
                 ) ?? false
               );
