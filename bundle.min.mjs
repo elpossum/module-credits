@@ -1,1 +1,1 @@
-import "./src/scripts/init.mjs"
+import "./src/scripts/init.mjs";

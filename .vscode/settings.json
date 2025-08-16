@@ -1,22 +1,14 @@
 {
-	"grammarly.overrides": [
-		{
-			"files": [
-				"**/CHANGELOG.md"
-			],
-			"config": {
-				"audience": "general",
-				"dialect": "american",
-				"domain": "general",
-				"emotions": [
-					"neutral",
-					"confident",
-					"analytical"
-				],
-				"goals": [
-					"inform"
-				]
-			}
-		}
-	]
+  "grammarly.overrides": [
+    {
+      "files": ["**/CHANGELOG.md"],
+      "config": {
+        "audience": "general",
+        "dialect": "american",
+        "domain": "general",
+        "emotions": ["neutral", "confident", "analytical"],
+        "goals": ["inform"]
+      }
+    }
+  ]
 }
