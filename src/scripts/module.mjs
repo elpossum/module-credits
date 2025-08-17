@@ -688,14 +688,14 @@ export class MMP {
       if (isURL(value)) {
         const domain =
           value
-            .match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)\./i)[1]
+            .match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)\./i)[1]
             ?.toLowerCase() ?? value;
         const tagType = Object.hasOwn(supportedAuthorTags, domain)
           ? domain
           : key;
         const urlDisplay =
           value.match(
-            /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)\./i,
+            /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)\./i,
           )[1] ?? key;
         return `<li><a href="${value}" target="_blank">${supportedAuthorTags[tagType]?.icon ?? ""}${tagType == "url" ? urlDisplay : tagType}</a></li>`;
       } else if (
