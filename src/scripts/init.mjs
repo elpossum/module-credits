@@ -46,7 +46,7 @@ Hooks.once("socketlib.ready", () => {
 // libWrapper HOOKS -> ready
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
 Hooks.once("ready", async () => {
-  async function expandedModuleDependencies(event) {
+  async function expandedModuleDependencies(_config, event) {
     const input = event.target;
     const module = game.modules.get(input.name);
 
@@ -254,12 +254,12 @@ Hooks.once("ready", async () => {
   if (game.modules.get("lib-wrapper")?.active ?? false) {
     libWrapper.register(
       MODULE.ID,
-      "ModuleManagement.prototype._onChangeCheckbox",
+      "ModuleManagement.prototype._onChangeForm",
       expandedModuleDependencies,
       "OVERRIDE",
     );
   } else {
-    ModuleManagement.prototype._onChangeCheckbox = expandedModuleDependencies;
+    ModuleManagement.prototype._onChangeForm = expandedModuleDependencies;
   }
 });
 
