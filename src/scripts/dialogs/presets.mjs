@@ -154,7 +154,7 @@ export class PresetDialog extends FormApplication {
 
           // Enable Modules
           preset.modules.forEach((module) => {
-            if (typeof moduleStates[module.id] != undefined) {
+            if (typeof moduleStates[module.id] != "undefined") {
               moduleStates[module.id] = true;
             }
           });
