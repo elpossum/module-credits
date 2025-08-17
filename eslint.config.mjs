@@ -29,7 +29,7 @@ export default defineConfig([
         isNewerVersion: "readonly",
         readTextFromFile: "readonly",
         ContextMenu: "readonly",
-      }
+      },
     },
   },
   globalIgnores(["**/libraries/", "dist/"]),
