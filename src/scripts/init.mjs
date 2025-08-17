@@ -48,6 +48,7 @@ Hooks.once("socketlib.ready", () => {
 Hooks.once("ready", async () => {
   async function expandedModuleDependencies(_config, event) {
     const input = event.target;
+    if (input.type !== "checkbox") return;
     const module = game.modules.get(input.name);
 
     // No relationships, No reason to check
