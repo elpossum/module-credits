@@ -2,7 +2,7 @@
   "scripts": {
     "build": "vite build",
     "serve": "vite",
-    "lint": "eslint --fix . || prettier --write ."
+    "lint": "eslint --fix . && prettier --write ."
   },
   "type": "module",
   "devDependencies": {
