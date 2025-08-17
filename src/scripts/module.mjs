@@ -295,7 +295,7 @@ export class MMP {
     let trackedChangelogs = MODULE.setting("trackedChangelogs");
 
     for (const [key, module] of Object.entries(trackedChangelogs)) {
-      if (!game.modules.has(key) ?? false) {
+      if (!game.modules.has(key)) {
         MODULE.debug(
           `${module.title} is no longer installed, remove from tracked changelogs`,
         );
@@ -325,7 +325,7 @@ export class MMP {
         let version =
           module?.version != "This is auto replaced"
             ? module?.version
-            : ("0.0.0" ?? "0.0.0");
+            : "0.0.0";
         let hasSeen =
           MODULE.setting("trackedChangelogs")?.[key]?.hasSeen ?? false;
         if (
@@ -413,7 +413,7 @@ export class MMP {
     (module?.relationships?.requires ?? []).forEach((requiredModule) => {
       // Exclude Library Modules
       if (
-        (!game.modules.get(requiredModule?.id)?.library ?? false) &&
+        !game.modules.get(requiredModule?.id)?.library &&
         (game.modules.get(requiredModule?.id)?.title ?? false)
       ) {
         let labelDetails = MMP.smartLabel(game.modules.get(requiredModule?.id));
@@ -598,10 +598,7 @@ export class MMP {
         });
 
       // Convert Filters To Dropdown
-      if (
-        elem.querySelectorAll(`nav.list-filters a.filter`)?.length > 0 ??
-        false
-      ) {
+      if (elem.querySelectorAll(`nav.list-filters a.filter`)?.length > 0) {
         let lastFilter = Array.from(
           elem.querySelectorAll("nav.list-filters a.filter"),
         ).pop();
@@ -1244,7 +1241,7 @@ export class MMP {
         );
       }
       // Add Authors Tag
-      if (moduleData?.authors.size >= 1 ?? false) {
+      if (moduleData?.authors.size >= 1) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
           `<span class="tag authors" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.authors")}" aria-describedby="tooltip">
@@ -1985,10 +1982,7 @@ export class MMP {
                   input.disabled = isLocked(settingID);
                 });
               if (isLocked(settingID)) {
-                if (
-                  !settingLabel.querySelector('[data-action="lock"]') ??
-                  false
-                ) {
+                if (!settingLabel.querySelector('[data-action="lock"]')) {
                   settingLabel.insertAdjacentHTML(
                     "afterbegin",
                     `<i class="fa-solid fa-lock" data-tooltip="${MODULE.localize("dialog.clientSettings.tooltips.lockSetting")}" data-tooltip-direction="UP" data-action="lock"></i>`,

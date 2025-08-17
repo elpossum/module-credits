@@ -51,7 +51,7 @@ Hooks.once("ready", async () => {
     const module = game.modules.get(input.name);
 
     // No relationships, No reason to check
-    if (!module.relationships ?? false) return false;
+    if (!module.relationships) return false;
 
     // Get All packages, Merging Modules, System and World
     const allPackages = Array.from(game.modules).concat([
@@ -74,7 +74,7 @@ Hooks.once("ready", async () => {
           return filtered.concat([]);
 
         // If Required Module is not installed
-        if (!game.modules.get(requirement.id) ?? false) {
+        if (!game.modules.get(requirement.id)) {
           if (!isOptional)
             ui.notifications.error(
               game.i18n.format("MODMANAGE.DepNotInstalled", {
