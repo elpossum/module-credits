@@ -73,7 +73,7 @@ export class PresetDialog extends FormApplication {
 
       // Get Active Modules
       const packages = document.querySelectorAll(
-        "#module-management #module-list li.package",
+        "#module-management .package-list li.package",
       );
       let presetPackages = [];
       packages.forEach((elemPackage) => {
@@ -201,7 +201,7 @@ export class PresetDialog extends FormApplication {
       .querySelector('.dialog-buttons button[data-action="create"]')
       .addEventListener("click", () => {
         const packages = document.querySelectorAll(
-          "#module-management #module-list li.package",
+          "#module-management .package-list li.package",
         );
         let presetPackages = [];
         packages.forEach((elemPackage) => {
