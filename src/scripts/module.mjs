@@ -1,6 +1,6 @@
 // GET REQUIRED LIBRARIES
-import tippy from "tippy.js";
-import { PublicGoogleSheetsParser } from "public-google-sheets-parser";
+import tippy, { hideAll } from "tippy.js";
+import PublicGoogleSheetsParser from "public-google-sheets-parser";
 
 // GET MODULE CORE
 import { MODULE } from "./_module.mjs";
@@ -474,8 +474,14 @@ export class MMP {
         /https?:\/\/raw.githubusercontent.com\/(?<user>[^/]+)\/(?<repo>[^/]+)\/master\/(?<path>.*)/,
     };
 
-    // Set elem to first element
-    elem = elem[0];
+    const expandButton = elem.querySelector(
+      "search.flexrow button[data-action='toggleExpanded']",
+    );
+    expandButton.addEventListener("click", () => {
+      elem.querySelectorAll(".package-description").forEach((desc) => {
+        desc.classList.toggle("hidden");
+      });
+    });
 
     // Check for Big Picture Mode
     if (MODULE.setting("bigPictureMode"))
@@ -486,52 +492,52 @@ export class MMP {
     // ? Needs to be rewritten to use plain JS
     /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
     MMP.screwYourEmoji(
-      $(elem).find("#module-list .package"),
+      $(elem).find(".package-list .package"),
       ".package-title .title-group .title, .package-title",
     );
 
     // Focus on Filter
-    elem.querySelector('nav.list-filters input[type="search"]').focus();
+    elem.querySelector('search.flexrow input[type="search"]').focus();
 
     if (game.user.isGM) {
       // Add Presets Button
-      elem.querySelector("nav.list-filters").insertAdjacentHTML(
+      elem.querySelector("search.flexrow").insertAdjacentHTML(
         "afterbegin",
         `<button type="button" class="" data-action="presets" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.managePresets")}">
 				<i class="fa-solid fa-list-check"></i>
 			</button>`,
       );
       elem
-        .querySelector('nav.list-filters button[data-action="presets"]')
+        .querySelector('search.flexrow button[data-action="presets"]')
         .addEventListener("click", () => {
           new PresetDialog().render(true);
         });
 
       // Add Export Button
-      elem.querySelector("nav.list-filters button.expand").insertAdjacentHTML(
+      expandButton.insertAdjacentHTML(
         "beforebegin",
         `<button type="button" class="" data-action="export" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.exportModules")}">
 				<i class="fa-solid fa-download"></i>
 			</button>`,
       );
       elem
-        .querySelector('nav.list-filters button[data-action="export"]')
+        .querySelector('search.flexrow button[data-action="export"]')
         .addEventListener("click", () => {
           new ExportDialog(
-            elem.querySelectorAll("#module-list li.package"),
+            elem.querySelectorAll(".package-list li.package"),
           ).render(true);
         });
 
       // Add Import Button
       // ? Update import logic to be pure javascript
-      elem.querySelector("nav.list-filters button.expand").insertAdjacentHTML(
+      expandButton.insertAdjacentHTML(
         "beforebegin",
         `<button type="button" class="" data-action="import" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.importModules")}">
 				<i class="fa-solid fa-upload"></i>
 			</button>`,
       );
       elem
-        .querySelector('nav.list-filters button[data-action="import"]')
+        .querySelector('search.flexrow button[data-action="import"]')
         .addEventListener("click", () => {
           $('<input type="file">')
             .on("change", (event) => {
@@ -598,9 +604,9 @@ export class MMP {
         });
 
       // Convert Filters To Dropdown
-      if (elem.querySelectorAll(`nav.list-filters a.filter`)?.length > 0) {
+      if (elem.querySelectorAll(`search.flexrow a.filter`)?.length > 0) {
         let lastFilter = Array.from(
-          elem.querySelectorAll("nav.list-filters a.filter"),
+          elem.querySelectorAll("search.flexrow a.filter"),
         ).pop();
         let lockedCount = Object.keys(MODULE.setting("lockedModules")).length;
         lastFilter.insertAdjacentHTML(
@@ -608,10 +614,10 @@ export class MMP {
           `<a class="filter" data-filter="locked">${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})</a>`,
         );
         elem
-          .querySelector('nav.list-filters a.filter[data-filter="locked"]')
+          .querySelector('search.flexrow a.filter[data-filter="locked"]')
           .addEventListener("click", (event) => {
             elem
-              .querySelector("nav.list-filters a.filter.active")
+              .querySelector("search.flexrow a.filter.active")
               .classList.remove("active");
             event.target.classList.add("active");
 
@@ -631,32 +637,39 @@ export class MMP {
           });
 
         elem
-          .querySelector('nav.list-filters input[type="search"]')
+          .querySelector('search.flexrow input[type="search"]')
           .insertAdjacentHTML(
             "afterend",
             `<select data-action="filter"></select>`,
           );
         elem
-          .querySelectorAll("nav.list-filters a.filter")
+          .querySelectorAll("search.flexrow a.filter")
           .forEach((filterOpt) => {
             elem
-              .querySelector('nav.list-filters select[data-action="filter"]')
+              .querySelector('search.flexrow select[data-action="filter"]')
               .insertAdjacentHTML(
                 "beforeend",
                 `<option value="${filterOpt.dataset.filter}">${filterOpt.innerHTML}</option>`,
               );
           });
         elem.querySelector(
-          `nav.list-filters select[data-action="filter"]`,
+          `search.flexrow select[data-action="filter"]`,
         ).value = elem.querySelector(
-          "nav.list-filters a.filter.active",
+          "search.flexrow a.filter.active",
         ).dataset.filter;
         elem
-          .querySelector(`nav.list-filters select[data-action="filter"]`)
+          .querySelector(`search.flexrow select[data-action="filter"]`)
           .addEventListener("change", (event) => {
+            if (event.target.value !== "locked") {
+              elem
+                .querySelectorAll(".package-list .package")
+                .forEach((elemPackage) => {
+                  elemPackage.classList.remove("hidden");
+                });
+            }
             elem
               .querySelector(
-                `nav.list-filters a.filter[data-filter="${event.target.value}"]`,
+                `search.flexrow a.filter[data-filter="${event.target.value}"]`,
               )
               .click();
           });
@@ -786,9 +799,9 @@ export class MMP {
     };
 
     const addConflict = (module, conflict) => {
-      let conflictElem =
+      const conflictElem =
         elem.querySelector(
-          `#module-list > li.package[data-module-id="${conflict.id}"]`,
+          `.package-list > li.package[data-module-id="${conflict.id}"]`,
         ) ?? false;
       if (conflictElem) {
         let moduleTitle =
@@ -798,7 +811,7 @@ export class MMP {
           moduleTitle += ` - ${MODULE.localize("dialog.moduleManagement.conflicts.core")}`;
         if ((conflict?.type ?? "").toLowerCase() == "system")
           moduleTitle += ` - ${game.system.title}`;
-        let content = new DOMParser().parseFromString(
+        const content = new DOMParser().parseFromString(
           conflictElem.querySelector(".conflicts")?.dataset?.tooltip ??
             `<ul class='${MODULE.ID}-tooltip-list'></ul>`,
           "text/html",
@@ -836,9 +849,9 @@ export class MMP {
     };
 
     for await (const elemPackage of elem.querySelectorAll(
-      "#module-list > li.package",
+      ".package-list > li.package",
     )) {
-      //elem.querySelectorAll('#module-list > li.package').forEach((elemPackage) => {
+      //elem.querySelectorAll('.package-list > li.package').forEach((elemPackage) => {
       let moduleKey = elemPackage.dataset.moduleId;
       let moduleData = game.modules.get(moduleKey);
 
@@ -955,11 +968,11 @@ export class MMP {
                 MODULE.setting("lockedModules"),
               ).length;
               elem.querySelector(
-                'nav.list-filters a.filter[data-filter="locked"]',
+                'search.flexrow a.filter[data-filter="locked"]',
               ).innerHTML =
                 `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
               elem.querySelector(
-                '#module-management nav.list-filters select option[value="locked"]',
+                '#module-management search.flexrow select option[value="locked"]',
               ).innerHTML =
                 `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
             });
@@ -992,11 +1005,11 @@ export class MMP {
                 MODULE.setting("lockedModules"),
               ).length;
               elem.querySelector(
-                'nav.list-filters a.filter[data-filter="locked"]',
+                'search.flexrow a.filter[data-filter="locked"]',
               ).innerHTML =
                 `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
               elem.querySelector(
-                '#module-management nav.list-filters select option[value="locked"]',
+                '#module-management search.flexrow select option[value="locked"]',
               ).innerHTML =
                 `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
             });
@@ -1235,7 +1248,7 @@ export class MMP {
       if (hasSettings?.[moduleKey] ?? false) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag settings" data-tooltip="${game.i18n.localize("SETTINGS.Configure")}" aria-describedby="tooltip">
+          `<span class="tag settings flexrow" data-tooltip="${game.i18n.localize("SETTINGS.TabModule")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-gear"></i>
 				</span>`,
         );
@@ -1244,7 +1257,7 @@ export class MMP {
       if (moduleData?.authors.size >= 1) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag authors" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.authors")}" aria-describedby="tooltip">
+          `<span class="tag authors flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.authors")}" aria-describedby="tooltip">
 					<i class="fa-solid ${moduleData?.authors.size == 1 ? "fa-user" : "fa-users"}"></i>
 				</span>`,
         );
@@ -1275,12 +1288,12 @@ export class MMP {
         // Remove Foundrys Author Tag cause I dislike it.
         if (
           elemPackage.querySelector(
-            ".package-overview span.tag i.fas.fa-user",
+            ".package-overview span.tag i.fa-solid.fa-user",
           ) ??
           false
         )
           elemPackage
-            .querySelector(".package-overview span.tag i.fas.fa-user")
+            .querySelector(".package-overview span.tag i.fa-solid.fa-user")
             .closest("span.tag")
             .remove();
       }
@@ -1296,19 +1309,21 @@ export class MMP {
           .querySelector(".package-overview")
           .insertAdjacentHTML(
             "beforeend",
-            `<span class="tag version"><i class="fas fa-code-branch"></i> ${moduleData?.version}</span>`,
+            `<span class="tag version flexrow"><i class="fas fa-code-branch"></i> ${moduleData?.version}</span>`,
           );
 
         // Remove Foundrys Info Tag cause I dislike it and because I use the same icon from the Readme Tag
         // Also my Website Tag already does this.
         if (
           elemPackage.querySelector(
-            ".package-overview span.tag i.fas.fa-circle-info",
+            ".package-overview span.tag i.fa-solid.fa-circle-info",
           ) ??
           false
         )
           elemPackage
-            .querySelector(".package-overview span.tag i.fas.fa-circle-info")
+            .querySelector(
+              ".package-overview span.tag i.fa-solid.fa-circle-info",
+            )
             .closest("span.tag")
             .remove();
       }
@@ -1327,7 +1342,7 @@ export class MMP {
       ) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag readme" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.readme")}" aria-describedby="tooltip">
+          `<span class="tag readme flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.readme")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-circle-info"></i>
 				</span>`,
         );
@@ -1358,7 +1373,7 @@ export class MMP {
       ) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag changelog" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.changelog")}" aria-describedby="tooltip">
+          `<span class="tag changelog flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.changelog")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-list"></i>
 				</span>`,
         );
@@ -1389,7 +1404,7 @@ export class MMP {
       ) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag attributions" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.attributions")}" aria-describedby="tooltip">
+          `<span class="tag attributions flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.attributions")}" aria-describedby="tooltip">
 					<i class="fa-brands fa-creative-commons-by"></i>
 				</span>`,
         );
@@ -1410,7 +1425,7 @@ export class MMP {
       if (MMP.getModuleProperty(moduleData.id, "url") ?? false) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<a href="${MMP.getModuleProperty(moduleData.id, "url")}" class="tag website" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.url")}" aria-describedby="tooltip" target="_blank">
+          `<a href="${MMP.getModuleProperty(moduleData.id, "url")}" class="tag website flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.url")}" aria-describedby="tooltip" target="_blank">
 					<i class="fa-solid fa-link"></i>
 				</a>`,
         );
@@ -1419,14 +1434,14 @@ export class MMP {
       if (MMP.bugReporterSupport(moduleData)) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag issues bug-reporter" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.bugReporter")}" aria-describedby="tooltip" target="_blank">
+          `<span class="tag issues bug-reporter flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.bugReporter")}" aria-describedby="tooltip" target="_blank">
 					<i class="fa-solid fa-bug"></i>
 				</span>`,
         );
       } else if (MMP.getModuleProperty(moduleData.id, "bugs") ?? false) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<a href="${MMP.getModuleProperty(moduleData.id, "bugs")}" class="tag issues" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.issues")}" aria-describedby="tooltip" target="_blank">
+          `<a href="${MMP.getModuleProperty(moduleData.id, "bugs")}" class="tag issues flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.issues")}" aria-describedby="tooltip" target="_blank">
 					<i class="fa-brands fa-github"></i>
 				</a>`,
         );
@@ -1435,7 +1450,7 @@ export class MMP {
       if (moduleData?.socket ?? false) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag socket" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.socket")}" aria-describedby="tooltip" >
+          `<span class="tag socket flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.socket")}" aria-describedby="tooltip" >
 					<i class="fa-solid fa-plug"></i>
 				</span>`,
         );
@@ -1444,7 +1459,7 @@ export class MMP {
       if (moduleData?.library ?? false) {
         elemPackage.querySelector(".package-overview").insertAdjacentHTML(
           "beforeend",
-          `<span class="tag library" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.library")}" aria-describedby="tooltip">
+          `<span class="tag library flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.library")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-book"></i>
 				</span>`,
         );
@@ -1453,10 +1468,11 @@ export class MMP {
       // Add Expand Module Button
       elemPackage.querySelector(".package-overview").insertAdjacentHTML(
         "beforeend",
-        `<button class="tag expand" data-tooltip="${game.i18n.localize("Expand")}" aria-describedby="tooltip">
+        `<button class="tag expand flexrow" data-tooltip="${game.i18n.localize("Expand")}" aria-describedby="tooltip">
 				<i class="fa-solid fa-circle-caret-up"></i>
 			</button>`,
       );
+      elemPackage.querySelector(".package-description").classList.add("hidden");
       elemPackage
         .querySelector(".package-overview button.tag.expand")
         .addEventListener("click", (event) => {
@@ -1465,6 +1481,11 @@ export class MMP {
 
           const currentElem = event.target.closest("button.tag.expand");
           const parentElem = event.target.closest(".package");
+          const iElem = currentElem.querySelector("i");
+
+          // Toggle Expand Icon
+          iElem.classList.toggle("fa-circle-caret-up");
+          iElem.classList.toggle("fa-circle-caret-down");
 
           // Toggle Package Description
           parentElem
@@ -1477,39 +1498,19 @@ export class MMP {
             .classList.contains("hidden")
             ? game.i18n.localize("Expand")
             : game.i18n.localize("Collapse");
+          game.tooltip.deactivate();
 
           // Update Expand Button If All Modules Are Expanded
           const isExpanded =
-            document.querySelectorAll(
-              "#module-management .package-description:not(.hidden)",
-            ).length ==
-            document.querySelectorAll("#module-management .package-description")
-              .length;
-          // Update Expand Button Title and Tooltip
-          document
-            .querySelector("#module-management .list-filters button.expand")
-            .setAttribute(
-              "title",
-              isExpanded
-                ? game.i18n.localize("Collapse")
-                : game.i18n.localize("Expand"),
-            );
-          document.querySelector(
-            "#module-management .list-filters button.expand",
-          ).dataset.tooltip = isExpanded
+            elem.querySelectorAll(".package-description:not(.hidden)")
+              .length === elem.querySelectorAll(".package-description").length;
+          // Update Expand Button Tooltip
+          expandButton.dataset.tooltip = isExpanded
             ? game.i18n.localize("Collapse")
             : game.i18n.localize("Expand");
           // Toggle Expand Button Icon
-          document
-            .querySelector("#module-management .list-filters button.expand i")
-            .classList.toggle("fa-angle-double-up", !isExpanded);
-          document
-            .querySelector("#module-management .list-filters button.expand i")
-            .classList.toggle("fa-angle-double-down", isExpanded);
-          // Update Expand Button If All Modules Are Expanded
-          Object.values(ui.windows).find(
-            (window) => window.id === "module-management",
-          )._expanded = isExpanded;
+          expandButton.classList.toggle("fa-angle-double-up", !isExpanded);
+          expandButton.classList.toggle("fa-angle-double-down", isExpanded);
         });
 
       // Add Locked Status
@@ -1588,11 +1589,12 @@ export class MMP {
         });
       });
       if (
-        (elem.querySelector('footer button[name="deactivate"]') ?? false) &&
+        (elem.querySelector('footer button[data-action="deactivateAll"]') ??
+          false) &&
         MODULE.setting("addGoogleSheetButton")
       ) {
         elem
-          .querySelector('footer button[name="deactivate"]')
+          .querySelector('footer button[data-action="deactivateAll"]')
           .insertAdjacentHTML(
             "afterend",
             `<button type="button" name="global-conflicts-spreadsheet">
@@ -1613,17 +1615,15 @@ export class MMP {
     // Handle if Settings Tag is Clicked
     elem
       .querySelectorAll(
-        "#module-list > li.package .package-overview .tag.settings",
+        ".package-list > li.package .package-overview .tag.settings",
       )
       .forEach((elemPackage) => {
         elemPackage.addEventListener("click", async () => {
-          await game.settings.sheet._render(true);
+          const settingsConfig = await game.settings.sheet.render(true);
+          const settingSheet = settingsConfig.element;
           let moduleId = elemPackage.closest("li.package").dataset.moduleId;
-          let settingSheet = Object.values(ui.windows).find(
-            (window) => window.id === "client-settings",
-          )?.element[0];
           let filters = settingSheet.querySelector(
-            `aside.sidebar nav.tabs a.category-tab[data-tab="${moduleId}"]`,
+            `aside[data-application-part="sidebar"] nav.tabs button[data-tab="${moduleId}"]`,
           );
 
           settingSheet.classList.add(`${MODULE.ID}-hide-filter-options`);
@@ -1633,7 +1633,7 @@ export class MMP {
     // Handle if 🐛 Bug Reporter Tags is Clicked
     elem
       .querySelectorAll(
-        "#module-list > li.package .package-overview .tag.issues.bug-reporter",
+        ".package-list > li.package .package-overview .tag.issues.bug-reporter",
       )
       .forEach((elemPackage) => {
         elemPackage.addEventListener("click", async () => {
@@ -1643,27 +1643,36 @@ export class MMP {
       });
 
     // Update Deactivate Modules
-    if (elem.querySelector('footer button[name="deactivate"]') ?? false) {
-      elem.querySelector('footer button[name="deactivate"]').innerHTML =
-        `<span class="fa-stack">
+    if (
+      elem.querySelector('footer button[data-action="deactivateAll"]') ??
+      false
+    ) {
+      elem.querySelector(
+        'footer button[data-action="deactivateAll"]',
+      ).innerHTML = `<span class="fa-stack">
 				<i class="fa-regular fa-square-check fa-stack-1x"></i>
 				<i class="fa-sharp fa-solid fa-slash fa-stack-1x"></i>
 			</span>${MODULE.localize("dialog.moduleManagement.buttons.deactivateModules")}`;
-      elem.querySelector('footer button[name="deactivate"]').dataset.tooltip =
-        MODULE.localize("dialog.moduleManagement.buttons.deactivateModulesAlt");
+      elem.querySelector(
+        'footer button[data-action="deactivateAll"]',
+      ).dataset.tooltip = MODULE.localize(
+        "dialog.moduleManagement.buttons.deactivateModulesAlt",
+      );
 
       elem
-        .querySelector('footer button[name="deactivate"]')
+        .querySelector('footer button[data-action="deactivateAll"]')
         .addEventListener("click", (event) => {
           if (event.ctrlKey) {
             MODULE.log("USER WAS HOLDING DOWN CONTROL KEY");
           } else {
+            event.stopPropagation();
             Array.from(
               elem.querySelectorAll(
-                "#module-list.package-list .package.checked",
+                ".package-list .package.checked",
               ),
             ).forEach((elemPackage) => {
               elemPackage.classList.remove("checked");
+              elemPackage.querySelector("input[type='checkbox']").checked = false;
             });
             for (const key of Object.keys(MODULE.setting("lockedModules"))) {
               elem.querySelector(
@@ -1741,9 +1750,7 @@ export class MMP {
     }
 
     // HIDE TOOLTIPS WHEN USER SCROLLS IN MODULE LIST
-    $("#module-management #module-list").on("scroll", () => {
-      tippy.hideAll();
-    });
+    $("#module-management .package-list").on("scroll", hideAll);
 
     //new ModuleManagement().render(true);
     app.setPosition();
