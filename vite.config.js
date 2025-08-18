@@ -35,6 +35,10 @@ const config = defineConfig(({ command }) => {
               src: "LICENSE",
               dest: ".",
             },
+            {
+              src: "ATTRIBUTIONS.md",
+              dest: ".",
+            }
           ],
         }),
       ]);
