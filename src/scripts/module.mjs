@@ -1298,35 +1298,29 @@ export class MMP {
             .remove();
       }
 
-      // Why have a tag that says this is okay?
-      if (elemPackage.querySelector(".package-overview span.tag.safe"))
-        elemPackage.querySelector(".package-overview span.tag.safe").remove();
-
       // Add Version Tag if one Does not exist
-      if (!elemPackage.querySelector(".package-overview span.tag.version")) {
+      if (!elemPackage.querySelector(".package-overview span.tag.badge")) {
         // Add Version Tag
         elemPackage
           .querySelector(".package-overview")
           .insertAdjacentHTML(
             "beforeend",
-            `<span class="tag version flexrow"><i class="fas fa-code-branch"></i> ${moduleData?.version}</span>`,
+            `<span class="tag badge flexrow"><i class="fas fa-code-branch"></i> ${moduleData?.version}</span>`,
           );
-
-        // Remove Foundrys Info Tag cause I dislike it and because I use the same icon from the Readme Tag
-        // Also my Website Tag already does this.
-        if (
-          elemPackage.querySelector(
-            ".package-overview span.tag i.fa-solid.fa-circle-info",
-          ) ??
-          false
-        )
-          elemPackage
-            .querySelector(
-              ".package-overview span.tag i.fa-solid.fa-circle-info",
-            )
-            .closest("span.tag")
-            .remove();
       }
+
+      // Remove Foundrys Info Tag cause I dislike it and because I use the same icon from the Readme Tag
+      // Also my Website Tag already does this.
+      if (
+        elemPackage.querySelector(
+          ".package-overview span.tag i.fa-solid.fa-circle-info",
+        ) ??
+        false
+      )
+        elemPackage
+          .querySelector(".package-overview span.tag i.fa-solid.fa-circle-info")
+          .closest("span.tag")
+          .remove();
 
       // Add ReadMe Tag
       if (
@@ -1667,12 +1661,11 @@ export class MMP {
           } else {
             event.stopPropagation();
             Array.from(
-              elem.querySelectorAll(
-                ".package-list .package.checked",
-              ),
+              elem.querySelectorAll(".package-list .package.checked"),
             ).forEach((elemPackage) => {
               elemPackage.classList.remove("checked");
-              elemPackage.querySelector("input[type='checkbox']").checked = false;
+              elemPackage.querySelector("input[type='checkbox']").checked =
+                false;
             });
             for (const key of Object.keys(MODULE.setting("lockedModules"))) {
               elem.querySelector(
