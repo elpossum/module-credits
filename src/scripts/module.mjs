@@ -825,25 +825,29 @@ export class MMP {
 
         if (
           conflictElem.querySelectorAll(
-            '.package-overview .package-title input[type="checkbox"] + span.conflicts',
+            ".package-overview .package-title .title + span.conflicts",
           )?.length > 0
         ) {
           conflictElem.querySelector(
-            '.package-overview .package-title input[type="checkbox"] + span.conflicts',
+            ".package-overview .package-title .title + span.conflicts",
           ).dataset.tooltip = content
             .querySelector("ul")
             .outerHTML.replaceAll(`"`, `'`);
         } else {
+          const conflictIcon = document.createElement("i");
+          conflictIcon.classList.add(
+            "conflicts",
+            "fa-solid",
+            "fa-triangle-exclamation",
+          );
+          conflictIcon.dataset.tooltip = content
+            .querySelector("ul")
+            .outerHTML.replaceAll(`"`, `'`);
+          conflictIcon.setAttribute("aria-describedby", "tooltip");
+          conflictIcon.style.marginRight = "0.25rem";
           conflictElem
-            .querySelector(
-              '.package-overview .package-title input[type="checkbox"]',
-            )
-            .insertAdjacentHTML(
-              "afterend",
-              `<span class="conflicts" data-tooltip="${content.querySelector("ul").outerHTML.replaceAll(`"`, `'`)}" aria-describedby="tooltip">
-						<i class="fa-solid fa-triangle-exclamation"></i>
-					</span>`,
-            );
+            .querySelector(".package-overview .package-title .title")
+            .prepend(conflictIcon);
         }
       }
     };
@@ -944,12 +948,15 @@ export class MMP {
             let lockedModules = MODULE.setting("lockedModules");
             lockedModules[moduleKey] = true;
             MODULE.setting("lockedModules", lockedModules).then(() => {
+              const lockIcon = document.createElement("i");
+              lockIcon.classList.add("fa-duotone", "fa-lock");
+              lockIcon.dataset.tooltip = MODULE.localize(
+                "dialog.moduleManagement.tooltips.moduleLocked",
+              );
+              lockIcon.style.marginRight = "0.25rem";
               packageElem[0]
-                .querySelector('.package-title input[type="checkbox"]')
-                .insertAdjacentHTML(
-                  "afterend",
-                  `<i class="fa-duotone fa-lock" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.moduleLocked")}" style="margin-right: 0.25rem;"></i>`,
-                );
+                .querySelector(".package-title .title")
+                .prepend(lockIcon);
 
               if (MODULE.setting("disableLockedModules")) {
                 packageElem[0].querySelector(
@@ -1244,9 +1251,19 @@ export class MMP {
         },
       ]);
 
+      // Put existing tags in container
+      const overviewContainer = elemPackage.querySelector(".package-overview");
+      const tags = overviewContainer.querySelectorAll(".tag");
+      const tagContainer = document.createElement("div");
+      tagContainer.classList.add("tag-container", "flexrow");
+      tags.forEach((tag) => {
+        tagContainer.appendChild(tag);
+      });
+      overviewContainer.appendChild(tagContainer);
+
       // Add Setting Tag if Module has Editable Tags
       if (hasSettings?.[moduleKey] ?? false) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag settings flexrow" data-tooltip="${game.i18n.localize("SETTINGS.TabModule")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-gear"></i>
@@ -1255,7 +1272,7 @@ export class MMP {
       }
       // Add Authors Tag
       if (moduleData?.authors.size >= 1) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag authors flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.authors")}" aria-describedby="tooltip">
 					<i class="fa-solid ${moduleData?.authors.size == 1 ? "fa-user" : "fa-users"}"></i>
@@ -1286,39 +1303,30 @@ export class MMP {
         });
 
         // Remove Foundrys Author Tag cause I dislike it.
-        if (
-          elemPackage.querySelector(
-            ".package-overview span.tag i.fa-solid.fa-user",
-          ) ??
-          false
-        )
-          elemPackage
-            .querySelector(".package-overview span.tag i.fa-solid.fa-user")
+        if (overviewContainer.querySelector(".tag i.fa-solid.fa-user") ?? false)
+          overviewContainer
+            .querySelector(".tag i.fa-solid.fa-user")
             .closest("span.tag")
             .remove();
       }
 
       // Add Version Tag if one Does not exist
-      if (!elemPackage.querySelector(".package-overview span.tag.badge")) {
+      if (!overviewContainer.querySelector(".tag.badge")) {
         // Add Version Tag
-        elemPackage
-          .querySelector(".package-overview")
-          .insertAdjacentHTML(
-            "beforeend",
-            `<span class="tag badge flexrow"><i class="fas fa-code-branch"></i> ${moduleData?.version}</span>`,
-          );
+        overviewContainer.insertAdjacentHTML(
+          "beforeend",
+          `<span class="tag badge flexrow"><i class="fas fa-code-branch"></i> ${moduleData?.version}</span>`,
+        );
       }
 
       // Remove Foundrys Info Tag cause I dislike it and because I use the same icon from the Readme Tag
       // Also my Website Tag already does this.
       if (
-        elemPackage.querySelector(
-          ".package-overview span.tag i.fa-solid.fa-circle-info",
-        ) ??
+        overviewContainer.querySelector(".tag i.fa-solid.fa-circle-info") ??
         false
       )
-        elemPackage
-          .querySelector(".package-overview span.tag i.fa-solid.fa-circle-info")
+        overviewContainer
+          .querySelector(".tag i.fa-solid.fa-circle-info")
           .closest("span.tag")
           .remove();
 
@@ -1334,14 +1342,14 @@ export class MMP {
         ) ??
           false)
       ) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag readme flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.readme")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-circle-info"></i>
 				</span>`,
         );
-        elemPackage
-          .querySelector(".package-overview span.tag.readme")
+        overviewContainer
+          .querySelector(".tag.readme")
           .addEventListener("click", () => {
             new PreviewDialog({
               [moduleKey]: {
@@ -1365,14 +1373,14 @@ export class MMP {
         ) ??
           false)
       ) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag changelog flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.changelog")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-list"></i>
 				</span>`,
         );
-        elemPackage
-          .querySelector(".package-overview span.tag.changelog")
+        overviewContainer
+          .querySelector(".tag.changelog")
           .addEventListener("click", () => {
             new PreviewDialog({
               [moduleKey]: {
@@ -1396,14 +1404,14 @@ export class MMP {
         ) ??
           false)
       ) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag attributions flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.attributions")}" aria-describedby="tooltip">
 					<i class="fa-brands fa-creative-commons-by"></i>
 				</span>`,
         );
-        elemPackage
-          .querySelector(".package-overview span.tag.attributions")
+        overviewContainer
+          .querySelector(".tag.attributions")
           .addEventListener("click", () => {
             new PreviewDialog({
               [moduleKey]: {
@@ -1417,7 +1425,7 @@ export class MMP {
       }
       // Add Website Tag
       if (MMP.getModuleProperty(moduleData.id, "url") ?? false) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<a href="${MMP.getModuleProperty(moduleData.id, "url")}" class="tag website flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.url")}" aria-describedby="tooltip" target="_blank">
 					<i class="fa-solid fa-link"></i>
@@ -1426,14 +1434,14 @@ export class MMP {
       }
       // Add Issues Link | Support for 🐛 Bug Reporter Support
       if (MMP.bugReporterSupport(moduleData)) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag issues bug-reporter flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.bugReporter")}" aria-describedby="tooltip" target="_blank">
 					<i class="fa-solid fa-bug"></i>
 				</span>`,
         );
       } else if (MMP.getModuleProperty(moduleData.id, "bugs") ?? false) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<a href="${MMP.getModuleProperty(moduleData.id, "bugs")}" class="tag issues flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.issues")}" aria-describedby="tooltip" target="_blank">
 					<i class="fa-brands fa-github"></i>
@@ -1442,7 +1450,7 @@ export class MMP {
       }
       // Add Socket Tag
       if (moduleData?.socket ?? false) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag socket flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.socket")}" aria-describedby="tooltip" >
 					<i class="fa-solid fa-plug"></i>
@@ -1451,7 +1459,7 @@ export class MMP {
       }
       // Add Library Tag
       if (moduleData?.library ?? false) {
-        elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+        tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag library flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.library")}" aria-describedby="tooltip">
 					<i class="fa-solid fa-book"></i>
@@ -1460,15 +1468,15 @@ export class MMP {
       }
 
       // Add Expand Module Button
-      elemPackage.querySelector(".package-overview").insertAdjacentHTML(
+      overviewContainer.insertAdjacentHTML(
         "beforeend",
         `<button class="tag expand flexrow" data-tooltip="${game.i18n.localize("Expand")}" aria-describedby="tooltip">
 				<i class="fa-solid fa-circle-caret-up"></i>
 			</button>`,
       );
       elemPackage.querySelector(".package-description").classList.add("hidden");
-      elemPackage
-        .querySelector(".package-overview button.tag.expand")
+      overviewContainer
+        .querySelector("button.tag.expand")
         .addEventListener("click", (event) => {
           // Prevent Submitting Form - Saving Changes
           event.preventDefault();
@@ -1509,17 +1517,18 @@ export class MMP {
 
       // Add Locked Status
       if (Object.hasOwn(MODULE.setting("lockedModules"), moduleKey) ?? false) {
-        elemPackage
-          .querySelector(
-            '.package-overview .package-title input[type="checkbox"]',
-          )
-          .insertAdjacentHTML(
-            "afterend",
-            `<i class="fa-duotone fa-lock" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.moduleLocked")}" style="margin-right: 0.25rem;"></i>`,
-          );
+        const lockIcon = document.createElement("i");
+        lockIcon.classList.add("fa-duotone", "fa-lock");
+        lockIcon.dataset.tooltip = MODULE.localize(
+          "dialog.moduleManagement.tooltips.moduleLocked",
+        );
+        lockIcon.style.marginRight = "0.25rem";
+        overviewContainer
+          .querySelector(".package-title .title")
+          .prepend(lockIcon);
         if (MODULE.setting("disableLockedModules")) {
-          elemPackage.querySelector(
-            '.package-overview .package-title input[type="checkbox"]',
+          overviewContainer.querySelector(
+            '.package-title input[type="checkbox"]',
           ).disabled = true;
           elemPackage.classList.add("disabled");
         }
