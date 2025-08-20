@@ -137,9 +137,12 @@
         "tooltips": {
           "worldSetting": "World Setting",
           "clientSetting": "Client Setting",
+          "userSetting": "User Setting",
+          "menuSetting": "Menu Setting",
           "syncSetting": "Sync Setting",
           "lockSetting": "Lock Setting",
-          "unlockSetting": "Unlock Setting"
+          "unlockSetting": "Unlock Setting",
+          "lockedSetting": "Setting locked by GM"
         }
       },
       "preview": {

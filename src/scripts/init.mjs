@@ -281,12 +281,6 @@ Hooks.once("ready", async () => {
   //await MIGRATE.init();
 
   MMP.init();
-
-  // Enable MM+ Locked Settings if FCS is inactive
-  if (!(game.modules.get("force-client-settings")?.active ?? false)) {
-    Hooks.on("renderApplication", MMP.renderApplication);
-    Hooks.on("closeSettingsConfig", MMP.closeSettingsConfig);
-  }
 });
 
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */

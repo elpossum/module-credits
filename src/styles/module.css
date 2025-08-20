@@ -437,6 +437,17 @@
 }
 
 /* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
+/* Settings Config                                                    */
+/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
+#settings-config {
+  .categories .tab .form-group label i {
+    &.fa-lock, &.fa-unlock, &.fa-arrows-rotate {
+      cursor: pointer;
+    }
+  }
+}
+
+/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
 /* Client Settings                                                    */
 /* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
 #client-settings.module-credits-hide-filter-options
