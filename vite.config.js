@@ -1,6 +1,7 @@
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { defineConfig, transformWithEsbuild } from "vite";
 import fs from "fs-extra";
+import replace from "@rollup/plugin-replace";
 
 const config = defineConfig(({ command }) => {
   const plugins = [];
@@ -38,8 +39,12 @@ const config = defineConfig(({ command }) => {
             {
               src: "ATTRIBUTIONS.md",
               dest: ".",
-            }
+            },
           ],
+        }),
+        replace({
+          "process.env.NODE_ENV": JSON.stringify("production"),
+          preventAssignment: true,
         }),
       ]);
       break;
@@ -74,6 +79,10 @@ const config = defineConfig(({ command }) => {
             }
           },
         },
+        replace({
+          "process.env.NODE_ENV": JSON.stringify("development"),
+          preventAssignment: true,
+        }),
       ]);
       break;
   }
