@@ -136,9 +136,12 @@
         "tooltips": {
           "worldSetting": "Réglage du monde",
           "clientSetting": "Réglage du client",
+          "userSetting": "Réglage de l'utilisateur",
+          "menuSetting": "Réglage du menu",
           "syncSetting": "Réglage de la Sync",
           "lockSetting": "Verrouiller le réglage",
-          "unlockSetting": "Déverrouiller le réglage"
+          "unlockSetting": "Déverrouiller le réglage",
+          "lockedSetting": "Réglage verrouillé par le MJ"
         }
       },
       "preview": {
