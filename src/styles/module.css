@@ -477,31 +477,22 @@
 /* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
 #settings-config {
   .categories .tab .form-group label i {
-    &.fa-lock, &.fa-unlock, &.fa-arrows-rotate {
-      cursor: pointer;
+    padding-right: 0.25rem;
+    &.fa-lock,
+    &.fa-unlock,
+    &.fa-arrows-rotate {
+      cursor: var(--cursor-pointer);
+    }
+
+    &[data-action="lock"] + [data-action="sync"] {
+      display: none;
     }
   }
-}
-
-/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
-/* Client Settings                                                    */
-/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
-#client-settings.module-credits-hide-filter-options
+  &.module-credits-hide-filter-options
   .window-content
-  aside.sidebar {
+    aside[data-application-part="sidebar"] {
   display: none;
 }
-#client-settings form.categories .category .form-group label i {
-  padding-right: 0.25rem;
-}
-#client-settings
-  form.categories
-  .category
-  .form-group
-  label
-  i.fa-lock[data-action="lock"]
-  + [data-action="sync"] {
-  display: none;
 }
 
 /* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
