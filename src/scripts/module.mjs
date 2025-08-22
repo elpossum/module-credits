@@ -85,21 +85,14 @@ export class MMP {
   static installAPI = () => {
     game.modules.get(MODULE.ID).API = {
       getContent: async (module, fileType, options = { dir: "modules" }) => {
-        let getFiles = await this.checkIfFilesExists(
-          `./${options.dir}/${module.id}/`,
-          { extensions: [".md"] },
-        );
-        let selectedFile = getFiles
-          ? getFiles.filter((file) =>
-              file.toLowerCase().endsWith(`${fileType}.md`.toLowerCase()),
-            )[0]
-          : false;
+        const fileString = `./${options.dir}/${module.id}/${fileType}${fileType.toLowerCase() === "license" ? "" : ".md"}`;
+        const fileExists = await foundry.utils.srcExists(fileString);
 
-        if (selectedFile == false || selectedFile == undefined) {
+        if (fileExists == false || fileExists == undefined) {
           return await this.getGithubMarkdown(module[fileType.toLowerCase()]);
         }
 
-        return await this.getFile(selectedFile);
+        return await this.getFile(fileString);
       },
     };
   };
@@ -2017,7 +2010,10 @@ export class MMP {
         )[0]
       : false;
     // Get License File
-      let license = false; // Foundry File Picker Does not Display this File
+    const license = await foundry.utils.srcExists(
+      `./systems/${game.system.id}/LICENSE`,
+    ); // Foundry File Picker Does not Display this File
+    if (license) getFiles.push(`systems/${game.system.id}/LICENSE`);
 
     // Cleanup General Information
     elem.querySelector(".info p.version").classList.add("hidden");
@@ -2057,7 +2053,7 @@ export class MMP {
       );
       if (
         readme ||
-          ((game.system.readme || "").match(APIs.github) ?? false) ||
+        ((game.system.readme || "").match(APIs.github) ?? false) ||
         ((game.system.readme || "").match(APIs.rawGithub) ?? false)
       ) {
         if (systemLinksText.includes("readme"))
@@ -2087,7 +2083,7 @@ export class MMP {
 
       if (
         changelog ||
-          ((game.system.changelog || "").match(APIs.github) ?? false) ||
+        ((game.system.changelog || "").match(APIs.github) ?? false) ||
         ((game.system.changelog || "").match(APIs.rawGithub) ?? false)
       ) {
         if (systemLinksText.includes("changelog"))
@@ -2143,6 +2139,36 @@ export class MMP {
               title: game.system.title ?? "System",
               version: game.system.version ?? "0.0.0",
               type: "ATTRIBUTIONS",
+              isSystem: true,
+            },
+          }).render(true);
+        });
+      }
+
+      if (
+        license ||
+        ((game.system.flags.license || "").match(APIs.github) ?? false) ||
+        ((game.system.flags.license || "").match(APIs.rawGithub) ?? false)
+      ) {
+        if (systemLinksText.includes("license"))
+          systemLinks
+            .find((link) => link.textContent.toLowerCase().includes("license"))
+            .remove();
+        const licenseButton = document.createElement("a");
+        licenseButton.dataset.action = "license";
+        licenseButton.dataset.tooltip = MODULE.localize(
+          "dialog.moduleManagement.tags.license",
+        );
+        licenseButton.innerHTML = `<i class="fa-brands fa-creative-commons-by"></i> ${MODULE.localize("dialog.moduleManagement.tags.license")}`;
+        systemLinksContainer.append(licenseButton);
+
+        licenseButton.addEventListener("click", () => {
+          new PreviewDialog({
+            [game.system.id]: {
+              hasSeen: false,
+              title: game.system.title ?? "System",
+              version: game.system.version ?? "0.0.0",
+              type: "LICENSE",
               isSystem: true,
             },
           }).render(true);

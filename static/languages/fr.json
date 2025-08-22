@@ -123,6 +123,7 @@
           "url": "Voir le site internet",
           "readme": "Voir le Readme",
           "attributions": "Voir les attributions",
+          "license": "Voir la licence",
           "issues": "Rapporter/voir le(s) bug(s)",
           "changelog": "Voir le log des changements",
           "bugReporter": "Rapporter les bugs avec 🐛 Rapporteur de bug"

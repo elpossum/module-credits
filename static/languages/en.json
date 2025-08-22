@@ -125,6 +125,7 @@
           "readme": "View Readme",
           "changelog": "View Changelog",
           "attributions": "View Attributions",
+          "license": "View License",
           "issues": "Report/View Bug(s)",
           "bugReporter": "Report Bug with 🐛 Bug Reporter"
         }
