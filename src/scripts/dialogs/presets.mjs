@@ -32,7 +32,7 @@ export class PresetDialog extends FormApplication {
   activateListeners(html) {
     super.activateListeners(html);
 
-    const presetInfo = (event) => {
+    function presetInfo(event) {
       const presetKey = event.target.closest("li").dataset.preset;
       let preset = MODULE.setting("presets")[presetKey];
       let uninstalledModules = preset.modules.filter((module) => {
@@ -65,9 +65,9 @@ export class PresetDialog extends FormApplication {
         content: `<p style="margin-top: 0px;">${MODULE.localize("dialog.presets.info.description", { name: preset.name })}</p>
 					<textarea readonly rows="15" style="margin-bottom: 0.5rem;">${output.join("\n")}</textarea>`,
       });
-    };
+    }
 
-    const updatePreset = (event) => {
+    function updatePreset(event) {
       const presetKey = event.target.closest("li").dataset.preset;
       let presets = MODULE.setting("presets");
 
@@ -107,8 +107,8 @@ export class PresetDialog extends FormApplication {
           return false;
         },
       });
-    };
-    const deletePreset = (event) => {
+    }
+    function deletePreset(event) {
       const presetKey = event.target.closest("li").dataset.preset;
       let presets = MODULE.setting("presets");
 
@@ -127,8 +127,8 @@ export class PresetDialog extends FormApplication {
           return false;
         },
       });
-    };
-    const activatePreset = (event) => {
+    }
+    function activatePreset(event) {
       const presetKey = event.target.closest("li").dataset.preset;
       let moduleStates = game.settings.get(
         "core",
@@ -172,7 +172,7 @@ export class PresetDialog extends FormApplication {
           return false;
         },
       });
-    };
+    }
 
     // Manage Presets Buttons
     html[0]

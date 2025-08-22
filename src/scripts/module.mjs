@@ -18,7 +18,7 @@ export class MMP {
   // MODULE SUPPORT CODE
   /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
   // MODULE SUPPORT FOR || 🐛 Bug Reporter Support ||
-  static bugReporterSupport = (moduleData) => {
+  static bugReporterSupport(moduleData) {
     // 🐛 Bug Reporter Support
     let bugReporter = game.modules.get("bug-reporter") || { api: undefined };
 
@@ -27,15 +27,15 @@ export class MMP {
       typeof bugReporter.api != "undefined" &&
       moduleData?.flags?.allowBugReporter
     );
-  };
+  }
 
   // MODULE SUPPORT FOR || socketlib ||
-  static registerSocketLib = () => {
+  static registerSocketLib() {
     this.socket = socketlib.registerModule(MODULE.ID);
     this.socket.register("useFilePicker", this.useFilePicker);
     this.socket.register("setUserSetting", this.setUserSetting);
     this.socket.register("getGMSetting", this.getGMSetting);
-  };
+  }
 
   static async getGMSetting({ moduleId, settingName }) {
     return await game.settings.get(moduleId, settingName);
@@ -49,7 +49,7 @@ export class MMP {
       settingValue,
       game.settings.settings.get(`${moduleId}.${settingName}`).name,
     );
-    const setSetting = (moduleId, settingName, settingValue) => {
+    function setSetting(moduleId, settingName, settingValue) {
       game.settings
         .set(moduleId, settingName, settingValue)
         .then((response) => {
@@ -61,7 +61,7 @@ export class MMP {
             location.reload();
           return response;
         });
-    };
+    }
 
     if (MODULE.setting("disableSyncPrompt")) {
       return setSetting(moduleId, settingName, settingValue);
@@ -82,7 +82,7 @@ export class MMP {
   }
 
   // DEFINE API
-  static installAPI = () => {
+  static installAPI() {
     game.modules.get(MODULE.ID).API = {
       getContent: async (module, fileType, options = { dir: "modules" }) => {
         const fileString = `./${options.dir}/${module.id}/${fileType}${fileType.toLowerCase() === "license" ? "" : ".md"}`;
@@ -95,16 +95,16 @@ export class MMP {
         return await this.getFile(fileString);
       },
     };
-  };
+  }
 
-  static init = () => {
+  static init() {
     this.installAPI();
 
     this.getChangelogs();
 
     if (game.user.isGM) MODULE.setting("storedRollback", {});
     MMP.#LockedSettings = MODULE.setting("lockedSettings");
-  };
+  }
 
   /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
   // WHAT IS THIS?
@@ -367,7 +367,7 @@ export class MMP {
   // F### Your Emoji (Better Title Sorting)
   // ? Needs to be rewritten to use plain JS
   /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
-  static smartLabel = (module) => {
+  static smartLabel(module) {
     // If user has overwritten Module Name, Return Overwrite
     if (MODULE.setting("renamedModules")[module.id] ?? false)
       return MODULE.setting("renamedModules")[module.id];
@@ -417,7 +417,7 @@ export class MMP {
     });
 
     return prefixes ?? [];
-  };
+  }
 
   static screwYourEmoji(elements, titleSelector) {
     $(elements).each((index, element) => {
@@ -682,15 +682,15 @@ export class MMP {
     }
 
     // Loop Through Modules
-    const isURL = (url) => {
+    function isURL(url) {
       try {
         new URL(url);
         return true;
       } catch {
         return false;
       }
-    };
-    const getContent = (key, value) => {
+    }
+    function getContent(key, value) {
       if (isURL(value)) {
         const domain =
           value
@@ -711,7 +711,7 @@ export class MMP {
       } else {
         return `<li><div>${supportedAuthorTags[key]?.icon ?? ""}${value}</div></li>`;
       }
-    };
+    }
     const supportedAuthorTags = {
       email: {
         icon: '<i class="fa-solid fa-envelope"></i>',
@@ -740,7 +740,7 @@ export class MMP {
     };
 
     // Add Conflicts
-    const conflictVersionCheck = (conflict) => {
+    function conflictVersionCheck(conflict) {
       let conflictVersion = false;
       if ((conflict?.type ?? "").toLowerCase() == "core")
         conflictVersion = game.version;
@@ -789,9 +789,9 @@ export class MMP {
         ) ||
           conflict.compatibility.maximum == conflictVersion)
       );
-    };
+    }
 
-    const addConflict = (module, conflict) => {
+    function addConflict(module, conflict) {
       const conflictElem =
         elem.querySelector(
           `.package-list > li.package[data-module-id="${conflict.id}"]`,
@@ -843,7 +843,7 @@ export class MMP {
             .prepend(conflictIcon);
         }
       }
-    };
+    }
 
     for await (const elemPackage of elem.querySelectorAll(
       ".package-list > li.package",
@@ -1751,7 +1751,7 @@ export class MMP {
     app.setPosition();
   }
 
-  static renderSettingsConfig = (app, elem) => {
+  static renderSettingsConfig(app, elem) {
     // Check for Big Picture Mode
     if (MODULE.setting("bigPictureMode"))
       elem.classList.add(`${MODULE.ID}-big-picture-mode`);
@@ -1785,14 +1785,14 @@ export class MMP {
           let settingLabel = settingElem.querySelector("label");
           const settingID = settingValue ?? false;
           // Lock Settings
-          const isLocked = (settingID) => {
+          function isLocked(settingID) {
             return (
               Object.hasOwn(
                 MODULE.setting("lockedSettings"),
                 `${settingID ?? "MMP-INVALID"}`,
               ) ?? false
             );
-          };
+          }
 
           if (
             ["client", "user"].includes(settingDetails.scope) &&
@@ -1833,7 +1833,7 @@ export class MMP {
                   });
                 });
 
-              const getActiveUser = () => {
+              function getActiveUser() {
                 let syncUsers = [];
                 game.users.forEach((user) => {
                   if (user.active && user.name != game.users.current.name) {
@@ -1863,7 +1863,7 @@ export class MMP {
                 });
 
                 return syncUsers;
-              };
+              }
 
               new ContextMenu(
                 $(settingLabel),
@@ -1954,7 +1954,7 @@ export class MMP {
           }
         }
       });
-  };
+  }
 
   static async renderSidebarTab(app, elem) {
     if (app.options.id !== "settings") return;

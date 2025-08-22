@@ -24,7 +24,7 @@ export class MODULE {
       : game.i18n.format(`${this.ID}.${stringId}`, data);
   }
 
-  static CONSOLE = (LOG_LEVEL, ...args) => {
+  static CONSOLE(LOG_LEVEL, ...args) {
     try {
       if (
         game.modules
@@ -41,25 +41,25 @@ export class MODULE {
     } catch (event) {
       console.warn(`${this.TITLE} debug logging failed`, event);
     }
-  };
+  }
 
-  static log = (...args) => {
+  static log(...args) {
     this.CONSOLE(5, ...args);
-  };
-  static info = (...args) => {
+  }
+  static info(...args) {
     this.CONSOLE(4, ...args);
-  };
-  static debug = (...args) => {
+  }
+  static debug(...args) {
     this.CONSOLE(3, ...args);
-  };
-  static warn = (...args) => {
+  }
+  static warn(...args) {
     this.CONSOLE(2, ...args);
-  };
-  static error = (...args) => {
+  }
+  static error(...args) {
     this.CONSOLE(1, ...args);
-  };
+  }
 
-  static setting = (...args) => {
+  static setting(...args) {
     // Are we registering a new setting
     if (args[0].toLowerCase() == "register") {
       // Register New Setting
@@ -92,5 +92,5 @@ export class MODULE {
         return game.settings.set(this.ID, setting, args[1]);
       }
     }
-  };
+  }
 }

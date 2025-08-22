@@ -61,14 +61,14 @@ Hooks.once("ready", async () => {
     ]);
 
     // Get All Required Packages
-    const getValidRelationship = (relationship, isOptional) =>
+    function getValidRelationship(relationship, isOptional) {
       relationship.reduce((filtered, requirement) => {
         // If required Module is already enabled or checked, then exclude
-        const isEnabled = (requirementID) => {
+        function isEnabled(requirementID) {
           return input.form.querySelector(
             `.package input[type="checkbox"][name="${requirementID}"]`,
           ).checked;
-        };
+        }
 
         // Exclude Systems
         if ((requirement?.type ?? "").toLowerCase() == "system")
@@ -169,6 +169,7 @@ Hooks.once("ready", async () => {
           ),
         ]);
       }, []);
+    }
 
     const requires = getValidRelationship(
       Array.from(module?.relationships?.requires ?? []),
