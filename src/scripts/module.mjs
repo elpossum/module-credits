@@ -2051,13 +2051,19 @@ export class MMP {
       const systemLinksContainer = elem.querySelector(".info div.system-links");
       const systemLinks = Array.from(
         systemLinksContainer.querySelectorAll("a"),
-      ).map((link) => link.textContent.toLowerCase());
+      );
+      const systemLinksText = systemLinks.map((link) =>
+        link.textContent.toLowerCase(),
+      );
       if (
-        !systemLinks.includes("readme") &&
-        (readme ||
+        readme ||
           ((game.system.readme || "").match(APIs.github) ?? false) ||
-          ((game.system.readme || "").match(APIs.rawGithub) ?? false))
+        ((game.system.readme || "").match(APIs.rawGithub) ?? false)
       ) {
+        if (systemLinksText.includes("readme"))
+          systemLinks
+            .find((link) => link.textContent.toLowerCase().includes("readme"))
+            .remove();
         const readmeButton = document.createElement("a");
         readmeButton.dataset.action = "readme";
         readmeButton.dataset.tooltip = MODULE.localize(
@@ -2080,11 +2086,16 @@ export class MMP {
       }
 
       if (
-        !systemLinks.includes("changelog") &&
-        (changelog ||
+        changelog ||
           ((game.system.changelog || "").match(APIs.github) ?? false) ||
-          ((game.system.changelog || "").match(APIs.rawGithub) ?? false))
+        ((game.system.changelog || "").match(APIs.rawGithub) ?? false)
       ) {
+        if (systemLinksText.includes("changelog"))
+          systemLinks
+            .find((link) =>
+              link.textContent.toLowerCase().includes("changelog"),
+            )
+            .remove();
         const changelogButton = document.createElement("a");
         changelogButton.dataset.action = "changelog";
         changelogButton.dataset.tooltip = MODULE.localize(
@@ -2107,13 +2118,16 @@ export class MMP {
       }
 
       if (
-        !systemLinks.includes("attributions") &&
-        (attributions ||
-          ((game.system.flags.attributions || "").match(APIs.github) ??
-            false) ||
-          ((game.system.flags.attributions || "").match(APIs.rawGithub) ??
-            false))
+        attributions ||
+        ((game.system.flags.attributions || "").match(APIs.github) ?? false) ||
+        ((game.system.flags.attributions || "").match(APIs.rawGithub) ?? false)
       ) {
+        if (systemLinksText.includes("attributions"))
+          systemLinks
+            .find((link) =>
+              link.textContent.toLowerCase().includes("attributions"),
+            )
+            .remove();
         const attributionsButton = document.createElement("a");
         attributionsButton.dataset.action = "attributions";
         attributionsButton.dataset.tooltip = MODULE.localize(
