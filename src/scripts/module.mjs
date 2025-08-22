@@ -2051,12 +2051,13 @@ export class MMP {
       const systemLinksText = systemLinks.map((link) =>
         link.textContent.toLowerCase(),
       );
+
       if (
         readme ||
         ((game.system.readme || "").match(APIs.github) ?? false) ||
         ((game.system.readme || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.includes("readme"))
+        if (systemLinksText.some((text) => text.includes("readme")))
           systemLinks
             .find((link) => link.textContent.toLowerCase().includes("readme"))
             .remove();
@@ -2086,7 +2087,7 @@ export class MMP {
         ((game.system.changelog || "").match(APIs.github) ?? false) ||
         ((game.system.changelog || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.includes("changelog"))
+        if (systemLinksText.some((text) => text.includes("changelog")))
           systemLinks
             .find((link) =>
               link.textContent.toLowerCase().includes("changelog"),
@@ -2118,7 +2119,7 @@ export class MMP {
         ((game.system.flags.attributions || "").match(APIs.github) ?? false) ||
         ((game.system.flags.attributions || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.includes("attributions"))
+        if (systemLinksText.some((text) => text.includes("attributions")))
           systemLinks
             .find((link) =>
               link.textContent.toLowerCase().includes("attributions"),
@@ -2150,7 +2151,7 @@ export class MMP {
         ((game.system.flags.license || "").match(APIs.github) ?? false) ||
         ((game.system.flags.license || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.includes("license"))
+        if (systemLinksText.some((text) => text.includes("license")))
           systemLinks
             .find((link) => link.textContent.toLowerCase().includes("license"))
             .remove();
@@ -2185,12 +2186,15 @@ export class MMP {
 
     // If Button, add active modules / total modules text to button
     if (MODULE.setting("showActiveModules") === "button") {
-      elem
-        .querySelector('section.settings button[data-app="modules"]')
-        .insertAdjacentHTML(
+      const modulesCountButton = elem.querySelector(
+        'section.settings button[data-app="modules"]:not(:has(small))',
+      );
+      if (modulesCountButton) {
+        modulesCountButton.insertAdjacentHTML(
           "beforeend",
           ` <small><span class="modules-count-active">${game.modules.filter((module) => module.active).length}</span><span class="modules-count-total">${game.modules.size}</span></small>`,
         );
+      }
     }
   }
 }
