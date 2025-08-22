@@ -16,6 +16,10 @@ import "../styles/module.css";
 // HMR
 import { Load } from "./hmr.mjs";
 
+export let ModuleManagement;
+export let SettingsConfig;
+export let mergeObject;
+
 Load.listen();
 
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
@@ -139,7 +143,7 @@ Hooks.once("ready", async () => {
           ),
         );
         return filtered.concat([
-          foundry.utils.mergeObject(
+          mergeObject(
             requirement,
             {
               title: game.modules.get(requirement?.id)?.title ?? "",
@@ -200,7 +204,7 @@ Hooks.once("ready", async () => {
 
     // Add Required Module Details to Requires;
     MODULE.log("recommends", recommends);
-    const content = await renderTemplate(
+    const content = await foundry.applications.handlebars.renderTemplate(
       `/modules/${MODULE.ID}/templates/dependencies.hbs`,
       {
         id: MODULE.ID,
@@ -256,7 +260,7 @@ Hooks.once("ready", async () => {
   if (game.modules.get("lib-wrapper")?.active ?? false) {
     libWrapper.register(
       MODULE.ID,
-      "ModuleManagement.prototype._onChangeForm",
+      "foundry.applications.sidebar.apps.ModuleManagement.prototype._onChangeForm",
       expandedModuleDependencies,
       "OVERRIDE",
     );
@@ -276,6 +280,9 @@ Hooks.once("lib-themer.Ready", (API) => {
 // FOUNDRY HOOKS -> READY
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
 Hooks.once("init", () => {
+  ModuleManagement = foundry.applications.sidebar.apps.ModuleManagement;
+  SettingsConfig = foundry.applications.settings.SettingsConfig;
+  mergeObject = foundry.utils.mergeObject;
   Hooks.on("renderApplicationV2", MMP.renderSidebarTab);
 });
 Hooks.once("ready", async () => {

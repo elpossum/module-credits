@@ -1,5 +1,6 @@
 // GET MODULE CORE
 import { MODULE } from "./_module.mjs";
+import { ModuleManagement, mergeObject } from "./init.mjs";
 
 // FOUNDRY HOOKS -> SETUP
 Hooks.once("setup", () => {
@@ -238,9 +239,9 @@ Hooks.once("setup", () => {
 
   // Handle Module Management Config onChange Event
   game.settings.settings.set(
-    `core.${ModuleManagement.CONFIG_SETTING}`,
-    foundry.utils.mergeObject(
-      game.settings.settings.get(`core.${ModuleManagement.CONFIG_SETTING}`),
+    `core.${ModuleManagement.SETTING}`,
+    mergeObject(
+      game.settings.settings.get(`core.${ModuleManagement.SETTING}`),
       {
         onChange: () => {
           if (!foundry.utils.isEmpty(MODULE.setting("storedRollback"))) {

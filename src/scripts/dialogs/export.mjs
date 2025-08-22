@@ -90,7 +90,7 @@ export class ExportDialog extends FormApplication {
     $(html)
       .find('[data-button="export"]')
       .on("click", () => {
-        saveDataToFile(
+        foundry.utils.saveDataToFile(
           JSON.stringify(this.moduleData, null, 4),
           "application/json",
           "PackageList.json",

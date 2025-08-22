@@ -1,3 +1,5 @@
+import { mergeObject } from "./init.mjs";
+
 export class MODULE {
   static ID = "module-credits";
 
@@ -71,7 +73,7 @@ export class MODULE {
         scope: "client",
         config: true,
       };
-      const newSetting = foundry.utils.mergeObject(settingDefaults, value, {
+      const newSetting = mergeObject(settingDefaults, value, {
         inplace: false,
       });
       game.settings.register(this.ID, setting, newSetting);

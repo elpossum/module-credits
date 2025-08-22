@@ -8,6 +8,7 @@ import { PreviewDialog } from "./dialogs/preview.mjs";
 import { ExportDialog } from "./dialogs/export.mjs";
 import { ImportDialog } from "./dialogs/import.mjs";
 import { PresetDialog } from "./dialogs/presets.mjs";
+import { ModuleManagement, SettingsConfig, mergeObject } from "./init.mjs";
 
 // DEFINE MODULE CLASS
 export class MMP {
@@ -126,7 +127,7 @@ export class MMP {
     // IF URL HAS FILE EXTENSION, ASSUME WE ARE LOOKING FOR A SPECIFIC FILE
     const getFile = url.split("/").pop().includes(".");
 
-    return await FilePicker.browse("user", url, options)
+    return await foundry.applications.apps.FilePicker.implementation.browse("user", url, options)
       .then((response) => {
         const files = getFile
           ? []
@@ -322,7 +323,7 @@ export class MMP {
         let hasSeen =
           MODULE.setting("trackedChangelogs")?.[key]?.hasSeen ?? false;
         if (
-          isNewerVersion(
+          foundry.utils.isNewerVersion(
             version ?? "0.0.0",
             MODULE.setting("trackedChangelogs")?.[key]?.version ?? "0.0.0",
           )
@@ -334,7 +335,7 @@ export class MMP {
         }
         await MODULE.setting(
           "trackedChangelogs",
-          foundry.utils.mergeObject(MODULE.setting("trackedChangelogs"), {
+          mergeObject(MODULE.setting("trackedChangelogs"), {
             [key]: {
               title: module?.title,
               version: version ?? "0.0.0",
@@ -548,7 +549,7 @@ export class MMP {
               }
 
               // Read File Data
-              readTextFromFile(fileData).then(async (response) => {
+              foundry.utils.readTextFromFile(fileData).then(async (response) => {
                 try {
                   // Convert Response into JSON
                   const responseJSON = JSON.parse(response);
@@ -877,7 +878,7 @@ export class MMP {
         : false;
 
       // Add Ability to Rename Package Title for Better Sorting
-      new ContextMenu($(elemPackage), ".package-overview ", [
+      new foundry.applications.ux.ContextMenu.implementation($(elemPackage), ".package-overview ", [
         {
           name: `${MODULE.localize("dialog.moduleManagement.contextMenu.renameModule")}`,
           icon: '<i class="fa-duotone fa-pen-to-square"></i>',
@@ -896,7 +897,7 @@ export class MMP {
                 ) {
                   MODULE.setting(
                     "renamedModules",
-                    foundry.utils.mergeObject(
+                    mergeObject(
                       MODULE.setting("renamedModules"),
                       {
                         [packageElem[0].closest("li.package").dataset.moduleId]:
@@ -1537,7 +1538,7 @@ export class MMP {
             if (conflict.id != moduleData.id) {
               addConflict(
                 game.modules.get(conflict.id),
-                foundry.utils.mergeObject(
+                mergeObject(
                   conflict,
                   { id: moduleData.id },
                   { inplace: false },
@@ -1572,7 +1573,7 @@ export class MMP {
             ) {
               addConflict(
                 game.modules.get(conflict.id),
-                foundry.utils.mergeObject(
+                mergeObject(
                   conflict,
                   { id: conflict.packageId },
                   { inplace: false },
@@ -1689,7 +1690,7 @@ export class MMP {
     if (game.user.isGM) {
       MODULE.setting(
         "storedRollback",
-        game.settings.get(`core`, `${ModuleManagement.CONFIG_SETTING}`),
+        game.settings.get(`core`, `${ModuleManagement.SETTING}`),
       );
       if (MODULE.setting("presetsRollbacks").length > 0) {
         elem.querySelector('footer button[type="submit"]').insertAdjacentHTML(
@@ -1727,7 +1728,7 @@ export class MMP {
                   game.settings
                     .set(
                       `core`,
-                      `${ModuleManagement.CONFIG_SETTING}`,
+                      `${ModuleManagement.SETTING}`,
                       rollBackModules,
                     )
                     .then(() => {
@@ -1869,7 +1870,7 @@ export class MMP {
                 return syncUsers;
               }
 
-              new ContextMenu(
+              new foundry.applications.ux.ContextMenu.implementation(
                 $(settingLabel),
                 '[data-action="sync"]',
                 getActiveUser(),

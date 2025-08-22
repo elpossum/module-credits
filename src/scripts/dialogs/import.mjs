@@ -1,5 +1,6 @@
 // GET MODULE CORE
 import { MODULE } from "../_module.mjs";
+import { ModuleManagement, SettingsConfig } from "../init.mjs";
 
 export class ImportDialog extends FormApplication {
   constructor(moduleData, importType) {
@@ -228,7 +229,7 @@ export class ImportDialog extends FormApplication {
           .is(":checked");
         const moduleStates = game.settings.get(
           "core",
-          ModuleManagement.CONFIG_SETTING,
+          ModuleManagement.SETTING,
         );
         const $moduleManagment = $("body #module-management");
         const settingsCalls = [];
@@ -318,7 +319,7 @@ export class ImportDialog extends FormApplication {
           if (!MODULE.setting("storePreviousOnPreset"))
             MODULE.setting("storedRollback", {});
           game.settings
-            .set("core", ModuleManagement.CONFIG_SETTING, moduleStates)
+            .set("core", ModuleManagement.SETTING, moduleStates)
             .then(() => {
               SettingsConfig.reloadConfirm({ world: true });
             });

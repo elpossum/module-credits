@@ -1,3 +1,5 @@
+import { mergeObject } from "./init.mjs";
+
 /** Not an actual hook listener but rather things to run on initial load */
 export const Load = {
   listen() {
@@ -13,7 +15,7 @@ export const Load = {
       import.meta.hot.on("lang-update", async ({ path }) => {
         const lang = await foundry.utils.fetchJsonWithTimeout(path);
         function apply() {
-          foundry.utils.mergeObject(game.i18n.translations, lang);
+          mergeObject(game.i18n.translations, lang);
           rerenderApps();
         }
         if (game.ready) {

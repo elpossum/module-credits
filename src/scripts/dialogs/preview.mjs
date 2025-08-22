@@ -2,6 +2,7 @@
 
 // GET MODULE CORE
 import { MODULE } from "../_module.mjs";
+import { mergeObject } from "../init.mjs";
 
 export class PreviewDialog extends FormApplication {
   constructor(data) {
@@ -93,7 +94,7 @@ export class PreviewDialog extends FormApplication {
               ) {
                 MODULE.setting(
                   "trackedChangelogs",
-                  foundry.utils.mergeObject(
+                  mergeObject(
                     MODULE.setting("trackedChangelogs"),
                     { [elem.dataset.moduleId]: { hasSeen: true } },
                   ),

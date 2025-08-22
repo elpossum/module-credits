@@ -1,5 +1,6 @@
 // GET MODULE CORE
 import { MODULE } from "../_module.mjs";
+import { ModuleManagement, SettingsConfig, mergeObject } from "../init.mjs";
 
 export class PresetDialog extends FormApplication {
   constructor() {
@@ -132,7 +133,7 @@ export class PresetDialog extends FormApplication {
       const presetKey = event.target.closest("li").dataset.preset;
       const moduleStates = game.settings.get(
         "core",
-        ModuleManagement.CONFIG_SETTING,
+        ModuleManagement.SETTING,
       );
       const preset = MODULE.setting("presets")[presetKey];
 
@@ -163,7 +164,7 @@ export class PresetDialog extends FormApplication {
           if (!MODULE.setting("storePreviousOnPreset"))
             MODULE.setting("storedRollback", {});
           game.settings
-            .set("core", ModuleManagement.CONFIG_SETTING, moduleStates)
+            .set("core", ModuleManagement.SETTING, moduleStates)
             .then(() => {
               SettingsConfig.reloadConfirm({ world: true });
             });
