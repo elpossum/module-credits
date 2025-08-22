@@ -12,10 +12,10 @@ export const Load = {
     if (import.meta.hot) {
       import.meta.hot.on("lang-update", async ({ path }) => {
         const lang = await foundry.utils.fetchJsonWithTimeout(path);
-        const apply = () => {
+        function apply() {
           foundry.utils.mergeObject(game.i18n.translations, lang);
-          rerenderApps(path);
-        };
+          rerenderApps();
+        }
         if (game.ready) {
           apply();
         } else {
@@ -24,11 +24,11 @@ export const Load = {
       });
 
       import.meta.hot.on("template-update", async ({ path }) => {
-        const apply = async () => {
+        async function apply() {
           delete Handlebars.partials[path];
           await foundry.applications.handlebars.getTemplate(path);
-          rerenderApps(path);
-        };
+          rerenderApps();
+        }
         if (game.ready) {
           apply();
         } else {

@@ -18,7 +18,7 @@ export class PreviewDialog extends FormApplication {
       classes: ["sheet", "journal-sheet", "journal-entry"],
       popOut: true,
       resizable: true,
-      template: `./modules/${MODULE.ID}/templates/preview.hbs`,
+      template: `modules/${MODULE.ID}/templates/preview.hbs`,
       width: $(window).width() > 960 ? 960 : $(window).width() - 100,
       height: $(window).height() > 800 ? 800 : $(window).height() - 100,
     });

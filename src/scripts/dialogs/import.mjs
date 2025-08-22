@@ -29,7 +29,7 @@ export class ImportDialog extends FormApplication {
       title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.import")}`,
       id: `${MODULE.ID}-import-dialog`,
       classes: ["dialog"],
-      template: `./modules/${MODULE.ID}/templates/import.hbs`,
+      template: `modules/${MODULE.ID}/templates/import.hbs`,
       resizable: false,
       width: $(window).width() > 580 ? 580 : $(window).width() - 100,
       height: $(window).height() > 620 ? 620 : $(window).height() - 100,

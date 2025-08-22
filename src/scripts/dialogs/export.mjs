@@ -43,7 +43,7 @@ export class ExportDialog extends FormApplication {
       title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.export")}`,
       id: `${MODULE.ID}-export-dialog`,
       classes: ["dialog"],
-      template: `./modules/${MODULE.ID}/templates/export.hbs`,
+      template: `modules/${MODULE.ID}/templates/export.hbs`,
       resizable: false,
       width: $(window).width() > 400 ? 400 : $(window).width() - 100,
       height: $(window).height() > 275 ? 275 : $(window).height() - 100,

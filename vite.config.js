@@ -58,6 +58,7 @@ const config = defineConfig(({ command }) => {
 
             if (file.includes("languages/") && file.endsWith(".json")) {
               const basePath = file.slice(file.indexOf("languages/"));
+              console.debug(`Updating language file: ${basePath}`);
               fs.promises.copyFile(file, `dist/${basePath}`).then(() => {
                 server.hot.send({
                   type: "custom",
@@ -69,6 +70,7 @@ const config = defineConfig(({ command }) => {
 
             if (file.includes("templates/") && file.endsWith(".hbs")) {
               const basePath = file.slice(file.indexOf("templates/"));
+              console.debug(`Updating template file: ${basePath}`);
               fs.promises.copyFile(file, `dist/${basePath}`).then(() => {
                 server.hot.send({
                   type: "custom",

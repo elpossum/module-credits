@@ -12,7 +12,7 @@ export class PresetDialog extends FormApplication {
       title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.presets")}`,
       id: `${MODULE.ID}-preset-dialog`,
       classes: ["dialog"],
-      template: `./modules/${MODULE.ID}/templates/presets.hbs`,
+      template: `modules/${MODULE.ID}/templates/presets.hbs`,
       resizable: false,
       width: $(window).width() > 400 ? 400 : $(window).width() - 100,
       height: $(window).height() > 275 ? 275 : $(window).height() - 100,
