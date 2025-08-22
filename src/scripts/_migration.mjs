@@ -18,7 +18,7 @@ Hooks.once("ready", async () => {
       { permanent: true },
     );
 
-    let newLockedSettings = {};
+    const newLockedSettings = {};
     for (const key of Object.keys(MODULE.setting("lockedSettings"))) {
       const settingDetails = game.settings.settings.get(key.replace("_", "."));
 

@@ -5,10 +5,10 @@ export class ExportDialog extends FormApplication {
   constructor(packages) {
     super();
 
-    let moduleData = {};
+    const moduleData = {};
     $(packages).each((index, module) => {
       if ($(module).find('input[type="checkbox"]').is(":checked")) {
-        let moduleID = $(module).data("module-id");
+        const moduleID = $(module).data("module-id");
         moduleData[moduleID] = {
           title: game.modules.get(moduleID)?.data?.title ?? "",
           version: game.modules.get(moduleID)?.data?.version ?? "0.0.0",
@@ -58,7 +58,7 @@ export class ExportDialog extends FormApplication {
       },
       activeModules: () => {
         // Build Markdown Display
-        let markdown = [
+        const markdown = [
           `### ${MODULE.localize("dialog.generic.activeModules")}`,
         ];
         for (const value of Object.values(this.moduleData)) {

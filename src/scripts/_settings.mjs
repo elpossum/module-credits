@@ -80,7 +80,7 @@ Hooks.once("setup", () => {
       step: 1,
     },
     onChange: (numberOfRollbacks) => {
-      let rollbacks = MODULE.setting("presetsRollbacks") ?? [];
+      const rollbacks = MODULE.setting("presetsRollbacks") ?? [];
 
       if (numberOfRollbacks > 0 && rollbacks.length > numberOfRollbacks) {
         const deleteRollbacks = rollbacks.length - numberOfRollbacks;
@@ -244,7 +244,7 @@ Hooks.once("setup", () => {
       {
         onChange: () => {
           if (!foundry.utils.isEmpty(MODULE.setting("storedRollback"))) {
-            let rollbacks = MODULE.setting("presetsRollbacks") ?? [];
+            const rollbacks = MODULE.setting("presetsRollbacks") ?? [];
             rollbacks.push(MODULE.setting("storedRollback"));
 
             if (

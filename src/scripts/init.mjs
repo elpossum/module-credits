@@ -91,7 +91,7 @@ Hooks.once("ready", async () => {
 
         // If Disabling
         if (!input.checked) {
-          let requirements = allPackages.reduce(
+          const requirements = allPackages.reduce(
             (relationships, aRequirement) => {
               // Check if Module is Enabled
               if (

@@ -34,14 +34,14 @@ export class PresetDialog extends FormApplication {
 
     function presetInfo(event) {
       const presetKey = event.target.closest("li").dataset.preset;
-      let preset = MODULE.setting("presets")[presetKey];
-      let uninstalledModules = preset.modules.filter((module) => {
+      const preset = MODULE.setting("presets")[presetKey];
+      const uninstalledModules = preset.modules.filter((module) => {
         return (game.modules.get(module.id) ?? false) == false;
       });
-      let installedModules = preset.modules.filter((module) => {
+      const installedModules = preset.modules.filter((module) => {
         return (game.modules.get(module.id) ?? false) != false;
       });
-      let output = [];
+      const output = [];
       if (uninstalledModules.length > 0) {
         output.push(
           `### ${MODULE.localize("dialog.presets.info.uninstalledModules")}`,
@@ -69,13 +69,13 @@ export class PresetDialog extends FormApplication {
 
     function updatePreset(event) {
       const presetKey = event.target.closest("li").dataset.preset;
-      let presets = MODULE.setting("presets");
+      const presets = MODULE.setting("presets");
 
       // Get Active Modules
       const packages = document.querySelectorAll(
         "#module-management .package-list li.package",
       );
-      let presetPackages = [];
+      const presetPackages = [];
       packages.forEach((elemPackage) => {
         if (
           elemPackage.querySelector('input[type="checkbox"]:checked') ??
@@ -110,7 +110,7 @@ export class PresetDialog extends FormApplication {
     }
     function deletePreset(event) {
       const presetKey = event.target.closest("li").dataset.preset;
-      let presets = MODULE.setting("presets");
+      const presets = MODULE.setting("presets");
 
       Dialog.confirm({
         id: `${MODULE.ID}-delete-preset`,
@@ -130,11 +130,11 @@ export class PresetDialog extends FormApplication {
     }
     function activatePreset(event) {
       const presetKey = event.target.closest("li").dataset.preset;
-      let moduleStates = game.settings.get(
+      const moduleStates = game.settings.get(
         "core",
         ModuleManagement.CONFIG_SETTING,
       );
-      let preset = MODULE.setting("presets")[presetKey];
+      const preset = MODULE.setting("presets")[presetKey];
 
       Dialog.confirm({
         id: `${MODULE.ID}-activate-preset`,
@@ -203,7 +203,7 @@ export class PresetDialog extends FormApplication {
         const packages = document.querySelectorAll(
           "#module-management .package-list li.package",
         );
-        let presetPackages = [];
+        const presetPackages = [];
         packages.forEach((elemPackage) => {
           if (
             elemPackage.querySelector('input[type="checkbox"]:checked') ??

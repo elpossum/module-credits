@@ -20,7 +20,7 @@ export class MMP {
   // MODULE SUPPORT FOR || 🐛 Bug Reporter Support ||
   static bugReporterSupport(moduleData) {
     // 🐛 Bug Reporter Support
-    let bugReporter = game.modules.get("bug-reporter") || { api: undefined };
+    const bugReporter = game.modules.get("bug-reporter") || { api: undefined };
 
     // Check if Bug Reporter is Exists and Enabled
     return (
@@ -124,11 +124,11 @@ export class MMP {
   /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
   static async useFilePicker(url, options = {}) {
     // IF URL HAS FILE EXTENSION, ASSUME WE ARE LOOKING FOR A SPECIFIC FILE
-    let getFile = url.split("/").pop().includes(".");
+    const getFile = url.split("/").pop().includes(".");
 
     return await FilePicker.browse("user", url, options)
       .then((response) => {
-        let files = getFile
+        const files = getFile
           ? []
           : response.files.filter((file) =>
               file.toLowerCase().endsWith(url.split("/").pop().toLowerCase()),
@@ -237,7 +237,7 @@ export class MMP {
     return new PublicGoogleSheetsParser()
       .parse("1eRcaqt8VtgDRC-iWP3SfOnXh-7kIw2k7po9-3dcftAk")
       .then((items) => {
-        let globalConflicts = [];
+        const globalConflicts = [];
         items.forEach((conflict) => {
           if (conflict?.["Module ID"] ?? false) {
             if (
@@ -268,7 +268,7 @@ export class MMP {
     if (property.lastIndexOf(".") == -1) property = "." + property;
     const indexOfProperty =
       property.lastIndexOf(".") >= 0 ? property.lastIndexOf(".") : 0;
-    let flagsPath = (
+    const flagsPath = (
       property.slice(0, indexOfProperty) +
       ".flags." +
       property.slice(indexOfProperty + 1)
@@ -285,7 +285,7 @@ export class MMP {
   }
 
   static async cleanUpRemovedChangelogs() {
-    let trackedChangelogs = MODULE.setting("trackedChangelogs");
+    const trackedChangelogs = MODULE.setting("trackedChangelogs");
 
     for (const [key, module] of Object.entries(trackedChangelogs)) {
       if (!game.modules.has(key)) {
@@ -301,12 +301,12 @@ export class MMP {
 
   static async getChangelogs() {
     for await (const [key, module] of game.modules.entries()) {
-      //let module = game.modules.get(key);
+      //const module = game.modules.get(key);
       // Get Files From Server
-      let getFiles = await MMP.checkIfFilesExists(`./modules/${key}/`, {
+      const getFiles = await MMP.checkIfFilesExists(`./modules/${key}/`, {
         extensions: [".md"],
       });
-      let changelog = getFiles
+      const changelog = getFiles
         ? getFiles.filter((file) =>
             file.toLowerCase().endsWith("CHANGELOG.md".toLowerCase()),
           )[0]
@@ -315,7 +315,7 @@ export class MMP {
       // Track Changelogs
       // Check if version is newer then saved.
       if (changelog && game.user.isGM) {
-        let version =
+        const version =
           module?.version != "This is auto replaced"
             ? module?.version
             : "0.0.0";
@@ -351,7 +351,7 @@ export class MMP {
 
     // If the user is the GM and has show New Changelogs on Load
     if (MODULE.setting("showNewChangelogsOnLoad") && game.user.isGM) {
-      let unSeenChangelogs = Object.keys(
+      const unSeenChangelogs = Object.keys(
         MODULE.setting("trackedChangelogs"),
       ).reduce((result, key) => {
         if (!MODULE.setting("trackedChangelogs")[key].hasSeen)
@@ -409,7 +409,9 @@ export class MMP {
         !game.modules.get(requiredModule?.id)?.library &&
         (game.modules.get(requiredModule?.id)?.title ?? false)
       ) {
-        let labelDetails = MMP.smartLabel(game.modules.get(requiredModule?.id));
+        const labelDetails = MMP.smartLabel(
+          game.modules.get(requiredModule?.id),
+        );
         prefixes = prefixes.concat(labelDetails);
         prefixes.push(game.modules.get(requiredModule?.id)?.title);
         prefixes = [...new Set(prefixes)];
@@ -424,13 +426,13 @@ export class MMP {
       let smartLabel = this.smartLabel(
         game.modules.get(element.dataset.moduleId),
       );
-      let sortLabel =
+      const sortLabel =
         typeof smartLabel == "string"
           ? smartLabel
           : smartLabel.join("") +
             game.modules.get(element.dataset.moduleId).title;
       if (typeof smartLabel != "string") {
-        let tooltips = smartLabel.join(" / ");
+        const tooltips = smartLabel.join(" / ");
         smartLabel = `${smartLabel.length > 0 ? '<i class="fa-regular fa-arrow-turn-down-right" data-tooltip="' + tooltips + '"></i> ' : ""}${game.modules.get(element.dataset.moduleId).title}`;
       }
       $(Array.from(element.querySelectorAll(titleSelector)).pop())
@@ -598,10 +600,10 @@ export class MMP {
 
       // Convert Filters To Dropdown
       if (elem.querySelectorAll(`search.flexrow a.filter`)?.length > 0) {
-        let lastFilter = Array.from(
+        const lastFilter = Array.from(
           elem.querySelectorAll("search.flexrow a.filter"),
         ).pop();
-        let lockedCount = Object.keys(MODULE.setting("lockedModules")).length;
+        const lockedCount = Object.keys(MODULE.setting("lockedModules")).length;
         lastFilter.insertAdjacentHTML(
           "afterend",
           `<a class="filter" data-filter="locked">${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})</a>`,
@@ -670,8 +672,8 @@ export class MMP {
     }
 
     // Get Modules with Settings
-    let hasSettings = {};
-    let settings = game.settings.settings.values();
+    const hasSettings = {};
+    const settings = game.settings.settings.values();
     for (let setting of settings) {
       if (
         setting.namespace != "core" &&
@@ -849,26 +851,26 @@ export class MMP {
       ".package-list > li.package",
     )) {
       //elem.querySelectorAll('.package-list > li.package').forEach((elemPackage) => {
-      let moduleKey = elemPackage.dataset.moduleId;
-      let moduleData = game.modules.get(moduleKey);
+      const moduleKey = elemPackage.dataset.moduleId;
+      const moduleData = game.modules.get(moduleKey);
 
       // Get Files From Server
-      let getFiles = await MMP.checkIfFilesExists(
+      const getFiles = await MMP.checkIfFilesExists(
         `./modules/${moduleData.id}/`,
         { extensions: [".md"] },
       );
       // Assign Files to Variables
-      let readme = getFiles
+      const readme = getFiles
         ? getFiles.filter((file) =>
             file.toLowerCase().endsWith("README.md".toLowerCase()),
           )[0]
         : false;
-      let changelog = getFiles
+      const changelog = getFiles
         ? getFiles.filter((file) =>
             file.toLowerCase().endsWith("CHANGELOG.md".toLowerCase()),
           )[0]
         : false;
-      let attributions = getFiles
+      const attributions = getFiles
         ? getFiles.filter((file) =>
             file.toLowerCase().endsWith("ATTRIBUTIONS.md".toLowerCase()),
           )[0]
@@ -922,7 +924,7 @@ export class MMP {
             game.user.isGM &&
             (MODULE.setting("renamedModules")[moduleKey] ?? false),
           callback: () => {
-            let renamedModules = MODULE.setting("renamedModules");
+            const renamedModules = MODULE.setting("renamedModules");
             delete renamedModules[moduleKey];
             MODULE.setting("renamedModules", renamedModules).then(() => {
               new ModuleManagement().render(true);
@@ -938,7 +940,7 @@ export class MMP {
             game.user.isGM &&
             !Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
           callback: (packageElem) => {
-            let lockedModules = MODULE.setting("lockedModules");
+            const lockedModules = MODULE.setting("lockedModules");
             lockedModules[moduleKey] = true;
             MODULE.setting("lockedModules", lockedModules).then(() => {
               const lockIcon = document.createElement("i");
@@ -964,7 +966,7 @@ export class MMP {
                 .querySelector('.package-title input[type="checkbox"]')
                 .dispatchEvent(new Event("change"));
 
-              let lockedCount = Object.keys(
+              const lockedCount = Object.keys(
                 MODULE.setting("lockedModules"),
               ).length;
               elem.querySelector(
@@ -987,7 +989,7 @@ export class MMP {
             game.user.isGM &&
             Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
           callback: (packageElem) => {
-            let lockedModules = MODULE.setting("lockedModules");
+            const lockedModules = MODULE.setting("lockedModules");
             delete lockedModules[moduleKey];
             MODULE.setting("lockedModules", lockedModules).then(() => {
               packageElem[0]
@@ -1001,7 +1003,7 @@ export class MMP {
                 elemPackage.classList.remove("disabled");
               }
 
-              let lockedCount = Object.keys(
+              const lockedCount = Object.keys(
                 MODULE.setting("lockedModules"),
               ).length;
               elem.querySelector(
@@ -1053,7 +1055,7 @@ export class MMP {
                 );
 
               // Add Modules to Dropdown
-              let elemOptGroup = elem.querySelector(
+              const elemOptGroup = elem.querySelector(
                 `select[name="${MODULE.ID}.formFields.selectLabel"] optgroup[label="${MODULE.localize("dialog.bugReporter.optGroup.modules")}"]`,
               );
               for (const module of game.modules) {
@@ -1097,7 +1099,7 @@ export class MMP {
                 );
 
               // Add Toggle Button
-              let elemLabel = elem
+              const elemLabel = elem
                 .querySelector('textarea[name="formFields.bugDescription"]')
                 .closest("div.form-group-stacked")
                 .querySelector("label");
@@ -1147,7 +1149,7 @@ export class MMP {
                       version: game.modules.get(selectedPackage.value).version,
                     };
 
-                  let markdown = [elemTextarea.value];
+                  const markdown = [elemTextarea.value];
                   markdown.push(`\n\n`);
                   markdown.push(`### Conflicts With`);
                   if (packageDetails.id != "")
@@ -1214,7 +1216,7 @@ export class MMP {
                       version: game.modules.get(selectedPackage.value).version,
                     };
 
-                  let markdown = [elemTextarea.value];
+                  const markdown = [elemTextarea.value];
                   markdown.push(`\n`);
                   markdown.push(`### Conflicts With`);
                   if (packageDetails.id != "")
@@ -1617,8 +1619,8 @@ export class MMP {
         elemPackage.addEventListener("click", async () => {
           const settingsConfig = await game.settings.sheet.render(true);
           const settingSheet = settingsConfig.element;
-          let moduleId = elemPackage.closest("li.package").dataset.moduleId;
-          let filters = settingSheet.querySelector(
+          const moduleId = elemPackage.closest("li.package").dataset.moduleId;
+          const filters = settingSheet.querySelector(
             `aside[data-application-part="sidebar"] nav.tabs button[data-tab="${moduleId}"]`,
           );
 
@@ -1633,7 +1635,7 @@ export class MMP {
       )
       .forEach((elemPackage) => {
         elemPackage.addEventListener("click", async () => {
-          let moduleId = elemPackage.closest("li.package").dataset.moduleId;
+          const moduleId = elemPackage.closest("li.package").dataset.moduleId;
           game.modules.get("bug-reporter").api.bugWorkflow(moduleId);
         });
       });
@@ -1700,7 +1702,9 @@ export class MMP {
         elem
           .querySelector('footer button[name="rollback"]')
           .addEventListener("click", () => {
-            let rollBackModules = [...MODULE.setting("presetsRollbacks")].pop();
+            const rollBackModules = [
+              ...MODULE.setting("presetsRollbacks"),
+            ].pop();
             Dialog.confirm({
               id: `${MODULE.ID}-rollback-modules`,
               title: MODULE.TITLE,
@@ -1782,7 +1786,7 @@ export class MMP {
         settingDetails ||= game.settings.settings.get(settingValue);
 
         if (settingDetails ?? false) {
-          let settingLabel = settingElem.querySelector("label");
+          const settingLabel = settingElem.querySelector("label");
           const settingID = settingValue ?? false;
           // Lock Settings
           function isLocked(settingID) {
@@ -1834,7 +1838,7 @@ export class MMP {
                 });
 
               function getActiveUser() {
-                let syncUsers = [];
+                const syncUsers = [];
                 game.users.forEach((user) => {
                   if (user.active && user.name != game.users.current.name) {
                     syncUsers.push({
@@ -1978,7 +1982,7 @@ export class MMP {
       elem
         .querySelector('.documentation button[data-action="changelogs"]')
         .addEventListener("click", async () => {
-          let changelogs = await (!game.user.isGM
+          const changelogs = await (!game.user.isGM
             ? MMP.socket.executeAsGM("getGMSetting", {
                 moduleId: MODULE.ID,
                 settingName: "trackedChangelogs",

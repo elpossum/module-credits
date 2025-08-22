@@ -66,7 +66,7 @@ export class PreviewDialog extends FormApplication {
               { dir: this.IsSystem ? "systems" : "modules" },
             )
             .then((response) => {
-              let content = new showdown.Converter().makeHtml(response);
+              const content = new showdown.Converter().makeHtml(response);
               html[0].querySelector(
                 "section.journal-entry-content .journal-header input.title",
               ).value = (
@@ -236,7 +236,7 @@ export class PreviewDialog extends FormApplication {
     );
 
     markAsSeen.addEventListener("click", () => {
-      let trackedChangelogs = MODULE.setting("trackedChangelogs");
+      const trackedChangelogs = MODULE.setting("trackedChangelogs");
       for (let key in trackedChangelogs) {
         trackedChangelogs[key].hasSeen = true;
 

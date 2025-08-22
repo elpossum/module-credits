@@ -77,19 +77,19 @@ export class ImportDialog extends FormApplication {
   activateListeners(html) {
     super.activateListeners(html);
     // All The Checkboxes
-    let totalModulesToImport = $(html).find(
+    const totalModulesToImport = $(html).find(
       'li[data-module] input[name="import-module"]:not([disabled])',
     ).length;
     let enabledModulesToImport = $(html).find(
       'li[data-module] input[name="import-module"]:not([disabled]):checked',
     ).length;
-    let totalClientSettingsToImport = $(html).find(
+    const totalClientSettingsToImport = $(html).find(
       'li[data-module] input[name="import-settings-client"]:not([disabled])',
     ).length;
     let enabledClientSettingsToImport = $(html).find(
       'li[data-module] input[name="import-settings-client"]:not([disabled]):checked',
     ).length;
-    let totalWorldSettingsToImport = $(html).find(
+    const totalWorldSettingsToImport = $(html).find(
       'li[data-module] input[name="import-settings-world"]:not([disabled])',
     ).length;
     let enabledWorldSettingsToImport = $(html).find(
@@ -223,15 +223,15 @@ export class ImportDialog extends FormApplication {
       .find('[data-button="import"]')
       .on("click", (event) => {
         event.preventDefault();
-        let keepActiveModules = $("html")
+        const keepActiveModules = $("html")
           .find('.dialog-buttons input[name="keep-enabled-modules"]')
           .is(":checked");
-        let moduleStates = game.settings.get(
+        const moduleStates = game.settings.get(
           "core",
           ModuleManagement.CONFIG_SETTING,
         );
-        let $moduleManagment = $("body #module-management");
-        let settingsCalls = [];
+        const $moduleManagment = $("body #module-management");
+        const settingsCalls = [];
 
         // check if User Wants to keep their currently Enabled modules
         if (!keepActiveModules) {
@@ -252,17 +252,17 @@ export class ImportDialog extends FormApplication {
         $(html)
           .find("ul li[data-module]")
           .each((index, module) => {
-            let moduleID = $(module).data("module");
-            let isEnabled = $(module)
+            const moduleID = $(module).data("module");
+            const isEnabled = $(module)
               .find(`input[name="import-module"][type="checkbox"]`)
               .is(":checked");
-            let importClientSettings =
+            const importClientSettings =
               $(module)
                 .find(
                   `input[name="import-${moduleID}-settings-client"][type="checkbox"]`,
                 )
                 .is(":checked") ?? false;
-            let importWorldSettings =
+            const importWorldSettings =
               $(module)
                 .find(
                   `input[name="import-${moduleID}-settings-world"][type="checkbox"]`,
