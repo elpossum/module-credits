@@ -275,7 +275,7 @@ Hooks.once("lib-themer.Ready", (API) => {
 // FOUNDRY HOOKS -> READY
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
 Hooks.once("init", () => {
-  Hooks.on("renderSidebarTab", MMP.renderSidebarTab);
+  Hooks.on("renderApplicationV2", MMP.renderSidebarTab);
 });
 Hooks.once("ready", async () => {
   //await MIGRATE.init();

@@ -1964,214 +1964,193 @@ export class MMP {
   };
 
   static async renderSidebarTab(app, elem) {
-    if (app.options.id == "settings") {
-      // Supported Remote APIs
-      const APIs = {
-        github:
-          /https?:\/\/github.com\/(?<user>[^/]+)\/(?<repo>[^/]+)\/blob\/[^/]+\/(?<path>.*)/,
-        rawGithub:
-          /https?:\/\/raw.githubusercontent.com\/(?<user>[^/]+)\/(?<repo>[^/]+)\/master\/(?<path>.*)/,
-      };
+    if (app.options.id !== "settings") return;
 
-      if (MMP.hasPermission && MMP.isGMOnline) {
-        elem[0]
-          .querySelector("#settings-documentation button:last-child")
-          .insertAdjacentHTML(
-            "afterend",
-            `<button data-action="changelogs">
+    // Supported Remote APIs
+    const APIs = {
+      github:
+        /https?:\/\/github.com\/(?<user>[^/]+)\/(?<repo>[^/]+)\/blob\/[^/]+\/(?<path>.*)/,
+      rawGithub:
+        /https?:\/\/raw.githubusercontent.com\/(?<user>[^/]+)\/(?<repo>[^/]+)\/master\/(?<path>.*)/,
+    };
+
+    if (MMP.hasPermission && MMP.isGMOnline) {
+      elem.querySelector(".documentation a:last-child").insertAdjacentHTML(
+        "afterend",
+        `<button data-action="changelogs">
 					<i class="fa-solid fa-list"></i> Changelogs
 				</button>`,
-          );
-
-        elem[0]
-          .querySelector(
-            '#settings-documentation button[data-action="changelogs"]',
-          )
-          .addEventListener("click", async () => {
-            let changelogs = await (!game.user.isGM
-              ? MMP.socket.executeAsGM("getGMSetting", {
-                  moduleId: MODULE.ID,
-                  settingName: "trackedChangelogs",
-                })
-              : MODULE.setting("trackedChangelogs"));
-            new PreviewDialog(changelogs).render(true);
-          });
-      }
-
-      // Get Files From Server
-      let getFiles = await MMP.checkIfFilesExists(
-        `./systems/${game.system.id}/`,
-        { extensions: [".md"] },
       );
-      // Assign Files to Variables
-      let readme = getFiles
-        ? getFiles.filter((file) =>
-            file.toLowerCase().endsWith("README.md".toLowerCase()),
-          )[0]
-        : false;
-      let changelog = getFiles
-        ? getFiles.filter((file) =>
-            file.toLowerCase().endsWith("CHANGELOG.md".toLowerCase()),
-          )[0]
-        : false;
-      let attributions = getFiles
-        ? getFiles.filter((file) =>
-            file.toLowerCase().endsWith("ATTRIBUTIONS.md".toLowerCase()),
-          )[0]
-        : false;
-      // Get License File
+
+      elem
+        .querySelector('.documentation button[data-action="changelogs"]')
+        .addEventListener("click", async () => {
+          let changelogs = await (!game.user.isGM
+            ? MMP.socket.executeAsGM("getGMSetting", {
+                moduleId: MODULE.ID,
+                settingName: "trackedChangelogs",
+              })
+            : MODULE.setting("trackedChangelogs"));
+          new PreviewDialog(changelogs).render(true);
+        });
+    }
+
+    // Get Files From Server
+    const getFiles = await MMP.checkIfFilesExists(
+      `./systems/${game.system.id}/`,
+      { extensions: [".md"] },
+    );
+    // Assign Files to Variables
+    const readme = getFiles
+      ? getFiles.filter((file) =>
+          file.toLowerCase().endsWith("README.md".toLowerCase()),
+        )[0]
+      : false;
+    const changelog = getFiles
+      ? getFiles.filter((file) =>
+          file.toLowerCase().endsWith("CHANGELOG.md".toLowerCase()),
+        )[0]
+      : false;
+    const attributions = getFiles
+      ? getFiles.filter((file) =>
+          file.toLowerCase().endsWith("ATTRIBUTIONS.md".toLowerCase()),
+        )[0]
+      : false;
+    // Get License File
       let license = false; // Foundry File Picker Does not Display this File
 
-      // Cleanup General Information
-      elem[0].querySelector("#game-details li.build").classList.add("hidden");
-      elem[0].querySelector("#game-details li.version span").innerHTML = `${
-        game.data.coreUpdate.hasUpdate
-          ? `<i class="notification-pip update fas fa-exclamation-circle" data-action="core-update" data-tooltip="${game.i18n.format(
-              "SETUP.UpdateAvailable",
-              {
-                type: game.i18n.localize("Software"),
-                channel: game.data.coreUpdate.channel,
-                version: game.data.coreUpdate.version,
-              },
-            )}"></i> `
-          : ""
-      }v${game.version}`;
-      ("");
-      elem[0].querySelector(
-        isNewerVersion(game.version, "11")
-          ? "#game-details li.system span.system-info"
-          : "#game-details li.system span",
-      ).innerHTML = `${
-        game.data.systemUpdate.hasUpdate
-          ? `<i class="notification-pip update fas fa-exclamation-circle" data-action="system-update" data-tooltip="${game.i18n.format(
-              "SETUP.UpdateAvailable",
-              {
-                type: game.i18n.localize("System"),
-                channel: game.data.system.title,
-                version: game.data.systemUpdate.version,
-              },
-            )}"></i> `
-          : ""
-      }v${game.system.version}`;
+    // Cleanup General Information
+    elem.querySelector(".info p.version").classList.add("hidden");
+    elem.querySelector(".info div.build span.value").innerHTML = `${
+      game.data.coreUpdate.hasUpdate
+        ? `<i class="notification-pip update active fas fa-exclamation-circle" data-action="core-update" data-tooltip="${game.i18n.format(
+            "SETUP.UpdateAvailable",
+            {
+              type: game.i18n.localize("Software"),
+              channel: game.data.coreUpdate.channel,
+              version: game.data.coreUpdate.version,
+            },
+          )}"></i> `
+        : ""
+    }v${game.version}`;
+    ("");
+    elem.querySelector(".info div.system span.value").innerHTML = `${
+      game.data.systemUpdate.hasUpdate
+        ? `<i class="notification-pip update active fas fa-exclamation-circle" data-action="system-update" data-tooltip="${game.i18n.format(
+            "SETUP.UpdateAvailable",
+            {
+              type: game.i18n.localize("System"),
+              channel: game.data.system.title,
+              version: game.data.systemUpdate.version,
+            },
+          )}"></i> `
+        : ""
+    }v${game.system.version}`;
 
-      if (readme || changelog || attributions || license) {
-        elem[0]
-          .querySelector("#game-details li.system")
-          .insertAdjacentHTML("afterend", '<li class="system-buttons"></li>');
-        if (
-          readme ||
+    if (readme || changelog || attributions || license) {
+      const systemLinksContainer = elem.querySelector(".info div.system-links");
+      const systemLinks = Array.from(
+        systemLinksContainer.querySelectorAll("a"),
+      ).map((link) => link.textContent.toLowerCase());
+      if (
+        !systemLinks.includes("readme") &&
+        (readme ||
           ((game.system.readme || "").match(APIs.github) ?? false) ||
-          ((game.system.readme || "").match(APIs.rawGithub) ?? false)
-        ) {
-          elem[0]
-            .querySelector("#game-details li.system-buttons")
-            .insertAdjacentHTML(
-              "beforeend",
-              `<button data-action="readme" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.readme")}">
-						<i class="fa-solid fa-circle-info"></i> ${MODULE.localize("dialog.moduleManagement.tags.readme")}
-					</button>`,
-            );
+          ((game.system.readme || "").match(APIs.rawGithub) ?? false))
+      ) {
+        const readmeButton = document.createElement("a");
+        readmeButton.dataset.action = "readme";
+        readmeButton.dataset.tooltip = MODULE.localize(
+          "dialog.moduleManagement.tags.readme",
+        );
+        readmeButton.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${MODULE.localize("dialog.moduleManagement.tags.readme")}`;
+        systemLinksContainer.append(readmeButton);
 
-          elem[0]
-            .querySelector(
-              '#game-details li.system-buttons button[data-action="readme"]',
-            )
-            .addEventListener("click", () => {
-              new PreviewDialog({
-                [game.system.id]: {
-                  hasSeen: false,
-                  title: game.system.title ?? "System",
-                  version: game.system.version ?? "0.0.0",
-                  type: "README",
-                  isSystem: true,
-                },
-              }).render(true);
-            });
-        }
+        readmeButton.addEventListener("click", () => {
+          new PreviewDialog({
+            [game.system.id]: {
+              hasSeen: false,
+              title: game.system.title ?? "System",
+              version: game.system.version ?? "0.0.0",
+              type: "README",
+              isSystem: true,
+            },
+          }).render(true);
+        });
+      }
 
-        if (
-          changelog ||
+      if (
+        !systemLinks.includes("changelog") &&
+        (changelog ||
           ((game.system.changelog || "").match(APIs.github) ?? false) ||
-          ((game.system.changelog || "").match(APIs.rawGithub) ?? false)
-        ) {
-          elem[0]
-            .querySelector("#game-details li.system-buttons")
-            .insertAdjacentHTML(
-              "beforeend",
-              `<button data-action="changelog" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.changelog")}">
-						<i class="fa-solid fa-list"></i> ${MODULE.localize("dialog.moduleManagement.tags.changelog")}
-					</button>`,
-            );
+          ((game.system.changelog || "").match(APIs.rawGithub) ?? false))
+      ) {
+        const changelogButton = document.createElement("a");
+        changelogButton.dataset.action = "changelog";
+        changelogButton.dataset.tooltip = MODULE.localize(
+          "dialog.moduleManagement.tags.changelog",
+        );
+        changelogButton.innerHTML = `<i class="fa-solid fa-list"></i> ${MODULE.localize("dialog.moduleManagement.tags.changelog")}`;
+        systemLinksContainer.append(changelogButton);
 
-          elem[0]
-            .querySelector(
-              '#game-details li.system-buttons button[data-action="changelog"]',
-            )
-            .addEventListener("click", () => {
-              new PreviewDialog({
-                [game.system.id]: {
-                  hasSeen: false,
-                  title: game.system.title ?? "System",
-                  version: game.system.version ?? "0.0.0",
-                  type: "CHANGELOG",
-                  isSystem: true,
-                },
-              }).render(true);
-            });
-        }
+        changelogButton.addEventListener("click", () => {
+          new PreviewDialog({
+            [game.system.id]: {
+              hasSeen: false,
+              title: game.system.title ?? "System",
+              version: game.system.version ?? "0.0.0",
+              type: "CHANGELOG",
+              isSystem: true,
+            },
+          }).render(true);
+        });
+      }
 
-        if (
-          attributions ||
+      if (
+        !systemLinks.includes("attributions") &&
+        (attributions ||
           ((game.system.flags.attributions || "").match(APIs.github) ??
             false) ||
           ((game.system.flags.attributions || "").match(APIs.rawGithub) ??
-            false)
-        ) {
-          elem[0]
-            .querySelector("#game-details li.system-buttons")
-            .insertAdjacentHTML(
-              "beforeend",
-              `<button data-action="attributions" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.attributions")}">
-						<i class="fa-brands fa-creative-commons-by"></i> ${MODULE.localize("dialog.moduleManagement.tags.attributions")}
-					</button>`,
-            );
+            false))
+      ) {
+        const attributionsButton = document.createElement("a");
+        attributionsButton.dataset.action = "attributions";
+        attributionsButton.dataset.tooltip = MODULE.localize(
+          "dialog.moduleManagement.tags.attributions",
+        );
+        attributionsButton.innerHTML = `<i class="fa-brands fa-creative-commons-by"></i> ${MODULE.localize("dialog.moduleManagement.tags.attributions")}`;
+        systemLinksContainer.append(attributionsButton);
 
-          elem[0]
-            .querySelector(
-              '#game-details li.system-buttons button[data-action="attributions"]',
-            )
-            .addEventListener("click", () => {
-              new PreviewDialog({
-                [game.system.id]: {
-                  hasSeen: false,
-                  title: game.system.title ?? "System",
-                  version: game.system.version ?? "0.0.0",
-                  type: "ATTRIBUTIONS",
-                  isSystem: true,
-                },
-              }).render(true);
-            });
-        }
+        attributionsButton.addEventListener("click", () => {
+          new PreviewDialog({
+            [game.system.id]: {
+              hasSeen: false,
+              title: game.system.title ?? "System",
+              version: game.system.version ?? "0.0.0",
+              type: "ATTRIBUTIONS",
+              isSystem: true,
+            },
+          }).render(true);
+        });
       }
+    }
 
-      // Hide Active Modules
-      MODULE.log("Show Active Modules", MODULE.setting("showActiveModules"));
+    // Hide Active Modules
+    MODULE.log("Show Active Modules", MODULE.setting("showActiveModules"));
 
-      // If Hidden or Button, hide default Active Modules
-      if (["hidden", "button"].includes(MODULE.setting("showActiveModules")))
-        elem[0]
-          .querySelector("#game-details li.modules")
-          .classList.add("hidden");
+    // If Hidden or Button, hide default Active Modules
+    if (["hidden", "button"].includes(MODULE.setting("showActiveModules")))
+      elem.querySelector(".info div.modules").classList.add("hidden");
 
-      // If Button, add active modules / total modules text to button
-      if (MODULE.setting("showActiveModules") === "button") {
-        elem[0]
-          .querySelector('#settings-game button[data-action="modules"]')
-          .insertAdjacentHTML(
-            "beforeend",
-            ` <small><span class="modules-count-active">${game.modules.filter((module) => module.active).length}</span><span class="modules-count-total">${game.modules.size}</span></small>`,
-          );
-      }
+    // If Button, add active modules / total modules text to button
+    if (MODULE.setting("showActiveModules") === "button") {
+      elem
+        .querySelector('section.settings button[data-app="modules"]')
+        .insertAdjacentHTML(
+          "beforeend",
+          ` <small><span class="modules-count-active">${game.modules.filter((module) => module.active).length}</span><span class="modules-count-total">${game.modules.size}</span></small>`,
+        );
     }
   }
 }
