@@ -80,8 +80,13 @@ export class ExportDialog extends FormApplication {
     $(html)
       .find('[data-button="copy"]')
       .on("click", () => {
-        $(html).find(`#${MODULE.ID}-copy-export`).select();
-        document.execCommand("copy");
+        try {
+          navigator.clipboard.writeText(
+            $(html).find(`#${MODULE.ID}-copy-export`).val(),
+          );
+        } catch {
+          //Do nothing
+        }
         ui.notifications.info(
           `<strong>${MODULE.TITLE}</strong>: ${MODULE.localize("dialog.export.notification.copied")}`,
         );
