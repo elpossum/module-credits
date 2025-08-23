@@ -884,168 +884,171 @@ export class MMP {
         : false;
 
       // Add Ability to Rename Package Title for Better Sorting
-      new ContextMenu($(elemPackage), ".package-overview ", [
-        {
-          name: `${MODULE.localize("dialog.moduleManagement.contextMenu.renameModule")}`,
-          icon: '<i class="fa-duotone fa-pen-to-square"></i>',
-          condition: game.user.isGM,
-          callback: (packageElem) => {
-            return Dialog.confirm({
-              id: `${MODULE.ID}-rename-module`,
-              title: MODULE.TITLE,
-              content: `<p style="margin-top: 0px;">${MODULE.localize("dialog.moduleManagement.contextMenu.renameModule")}</p>
-							<input type="text" name="${MODULE.ID}-rename-module-title" value="${packageElem[0].querySelector("label.package-title").textContent.trim()}"/>`,
-              yes: (elemDialog) => {
-                if (
-                  elemDialog[0].querySelector(
-                    `input[name="${MODULE.ID}-rename-module-title"]`,
-                  ).value.length >= 0
-                ) {
-                  MODULE.setting(
-                    "renamedModules",
-                    mergeObject(
-                      MODULE.setting("renamedModules"),
-                      {
-                        [packageElem[0].closest("li.package").dataset.moduleId]:
-                          elemDialog[0].querySelector(
+      new ContextMenu(
+        elemPackage,
+        ".package-overview ",
+        [
+          {
+            name: `${MODULE.localize("dialog.moduleManagement.contextMenu.renameModule")}`,
+            icon: '<i class="fa-duotone fa-pen-to-square"></i>',
+            condition: game.user.isGM,
+            callback: (packageElem) => {
+              return Dialog.confirm({
+                id: `${MODULE.ID}-rename-module`,
+                title: MODULE.TITLE,
+                content: `<p style="margin-top: 0px;">${MODULE.localize("dialog.moduleManagement.contextMenu.renameModule")}</p>
+							<input type="text" name="${MODULE.ID}-rename-module-title" value="${packageElem.querySelector("label.package-title").textContent.trim()}"/>`,
+                yes: (elemDialog) => {
+                  if (
+                    elemDialog[0].querySelector(
+                      `input[name="${MODULE.ID}-rename-module-title"]`,
+                    ).value.length >= 0
+                  ) {
+                    MODULE.setting(
+                      "renamedModules",
+                      mergeObject(
+                        MODULE.setting("renamedModules"),
+                        {
+                          [packageElem.closest("li.package").dataset
+                            .moduleId]: elemDialog[0].querySelector(
                             `input[name="${MODULE.ID}-rename-module-title"]`,
                           ).value,
-                      },
-                      { inplace: false },
-                    ),
-                  ).then(() => {
-                    new ModuleManagement().render(true);
-                  });
+                        },
+                        { inplace: false },
+                      ),
+                    ).then(() => {
+                      new ModuleManagement().render(true);
+                    });
+                  }
+                },
+                no: () => {
+                  return false;
+                },
+              }).then(() => {});
+            },
+          },
+          {
+            name: `${MODULE.localize("dialog.moduleManagement.contextMenu.restoreModuleName")}`,
+            icon: '<i class="fa-duotone fa-rotate"></i>',
+            condition:
+              game.user.isGM &&
+              (MODULE.setting("renamedModules")[moduleKey] ?? false),
+            callback: () => {
+              const renamedModules = MODULE.setting("renamedModules");
+              delete renamedModules[moduleKey];
+              MODULE.setting("renamedModules", renamedModules).then(() => {
+                new ModuleManagement().render(true);
+              });
+            },
+          },
+          {
+            name: MODULE.localize(
+              "dialog.moduleManagement.contextMenu.lockModule",
+            ),
+            icon: '<i class="fa-duotone fa-lock"></i>',
+            condition: () =>
+              game.user.isGM &&
+              !Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
+            callback: (packageElem) => {
+              const lockedModules = MODULE.setting("lockedModules");
+              lockedModules[moduleKey] = true;
+              MODULE.setting("lockedModules", lockedModules).then(() => {
+                const lockIcon = document.createElement("i");
+                lockIcon.classList.add("fa-duotone", "fa-lock");
+                lockIcon.dataset.tooltip = MODULE.localize(
+                  "dialog.moduleManagement.tooltips.moduleLocked",
+                );
+                lockIcon.style.marginRight = "0.25rem";
+                packageElem
+                  .querySelector(".package-title .title")
+                  .prepend(lockIcon);
+
+                if (MODULE.setting("disableLockedModules")) {
+                  packageElem.querySelector(
+                    '.package-title input[type="checkbox"]',
+                  ).disabled = true;
+                  elemPackage.classList.add("disabled");
                 }
-              },
-              no: () => {
-                return false;
-              },
-            }).then(() => {});
+                packageElem.querySelector(
+                  '.package-title input[type="checkbox"]',
+                ).checked = true;
+                packageElem.querySelector('.package-title input[type="checkbox"]')
+                  .dispatchEvent(new Event("change"));
+
+                const lockedCount = Object.keys(
+                  MODULE.setting("lockedModules"),
+                ).length;
+                elem.querySelector(
+                  'search.flexrow a.filter[data-filter="locked"]',
+                ).innerHTML =
+                  `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
+                elem.querySelector(
+                  '#module-management search.flexrow select option[value="locked"]',
+                ).innerHTML =
+                  `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
+              });
+            },
           },
-        },
-        {
-          name: `${MODULE.localize("dialog.moduleManagement.contextMenu.restoreModuleName")}`,
-          icon: '<i class="fa-duotone fa-rotate"></i>',
-          condition:
-            game.user.isGM &&
-            (MODULE.setting("renamedModules")[moduleKey] ?? false),
-          callback: () => {
-            const renamedModules = MODULE.setting("renamedModules");
-            delete renamedModules[moduleKey];
-            MODULE.setting("renamedModules", renamedModules).then(() => {
-              new ModuleManagement().render(true);
-            });
+          {
+            name: MODULE.localize(
+              "dialog.moduleManagement.contextMenu.unlockModule",
+            ),
+            icon: '<i class="fa-duotone fa-lock-open"></i>',
+            condition: () =>
+              game.user.isGM &&
+              Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
+            callback: (packageElem) => {
+              const lockedModules = MODULE.setting("lockedModules");
+              delete lockedModules[moduleKey];
+              MODULE.setting("lockedModules", lockedModules).then(() => {
+                packageElem.querySelector(".package-title i.fa-duotone.fa-lock")
+                  .remove();
+
+                if (MODULE.setting("disableLockedModules")) {
+                  packageElem.querySelector(
+                    '.package-title input[type="checkbox"]',
+                  ).disabled = false;
+                  elemPackage.classList.remove("disabled");
+                }
+
+                const lockedCount = Object.keys(
+                  MODULE.setting("lockedModules"),
+                ).length;
+                elem.querySelector(
+                  'search.flexrow a.filter[data-filter="locked"]',
+                ).innerHTML =
+                  `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
+                elem.querySelector(
+                  '#module-management search.flexrow select option[value="locked"]',
+                ).innerHTML =
+                  `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
+              });
+            },
           },
-        },
-        {
-          name: MODULE.localize(
-            "dialog.moduleManagement.contextMenu.lockModule",
-          ),
-          icon: '<i class="fa-duotone fa-lock"></i>',
-          condition: () =>
-            game.user.isGM &&
-            !Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
-          callback: (packageElem) => {
-            const lockedModules = MODULE.setting("lockedModules");
-            lockedModules[moduleKey] = true;
-            MODULE.setting("lockedModules", lockedModules).then(() => {
-              const lockIcon = document.createElement("i");
-              lockIcon.classList.add("fa-duotone", "fa-lock");
-              lockIcon.dataset.tooltip = MODULE.localize(
-                "dialog.moduleManagement.tooltips.moduleLocked",
+          {
+            name: MODULE.localize(
+              "dialog.moduleManagement.contextMenu.reportConflict",
+            ),
+            icon: '<i class="fa-solid fa-bug"></i>',
+            condition: () =>
+              game.user.isGM &&
+              (game.modules.get("bug-reporter")?.active ?? false),
+            callback: (packageElem) => {
+              const moduleDetails = game.modules.get(
+                packageElem.closest("li").dataset.moduleId,
               );
-              lockIcon.style.marginRight = "0.25rem";
-              packageElem[0]
-                .querySelector(".package-title .title")
-                .prepend(lockIcon);
+              Hooks.once("renderBugReportForm", (app, elem) => {
+                elem = elem[0];
 
-              if (MODULE.setting("disableLockedModules")) {
-                packageElem[0].querySelector(
-                  '.package-title input[type="checkbox"]',
-                ).disabled = true;
-                elemPackage.classList.add("disabled");
-              }
-              packageElem[0].querySelector(
-                '.package-title input[type="checkbox"]',
-              ).checked = true;
-              packageElem[0]
-                .querySelector('.package-title input[type="checkbox"]')
-                .dispatchEvent(new Event("change"));
-
-              const lockedCount = Object.keys(
-                MODULE.setting("lockedModules"),
-              ).length;
-              elem.querySelector(
-                'search.flexrow a.filter[data-filter="locked"]',
-              ).innerHTML =
-                `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
-              elem.querySelector(
-                '#module-management search.flexrow select option[value="locked"]',
-              ).innerHTML =
-                `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
-            });
-          },
-        },
-        {
-          name: MODULE.localize(
-            "dialog.moduleManagement.contextMenu.unlockModule",
-          ),
-          icon: '<i class="fa-duotone fa-lock-open"></i>',
-          condition: () =>
-            game.user.isGM &&
-            Object.hasOwn(MODULE.setting("lockedModules"), moduleKey),
-          callback: (packageElem) => {
-            const lockedModules = MODULE.setting("lockedModules");
-            delete lockedModules[moduleKey];
-            MODULE.setting("lockedModules", lockedModules).then(() => {
-              packageElem[0]
-                .querySelector(".package-title i.fa-duotone.fa-lock")
-                .remove();
-
-              if (MODULE.setting("disableLockedModules")) {
-                packageElem[0].querySelector(
-                  '.package-title input[type="checkbox"]',
-                ).disabled = false;
-                elemPackage.classList.remove("disabled");
-              }
-
-              const lockedCount = Object.keys(
-                MODULE.setting("lockedModules"),
-              ).length;
-              elem.querySelector(
-                'search.flexrow a.filter[data-filter="locked"]',
-              ).innerHTML =
-                `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
-              elem.querySelector(
-                '#module-management search.flexrow select option[value="locked"]',
-              ).innerHTML =
-                `${MODULE.localize("dialog.moduleManagement.lockedModules")} (${lockedCount})`;
-            });
-          },
-        },
-        {
-          name: MODULE.localize(
-            "dialog.moduleManagement.contextMenu.reportConflict",
-          ),
-          icon: '<i class="fa-solid fa-bug"></i>',
-          condition: () =>
-            game.user.isGM &&
-            (game.modules.get("bug-reporter")?.active ?? false),
-          callback: (packageElem) => {
-            const moduleDetails = game.modules.get(
-              packageElem[0].closest("li").dataset.moduleId,
-            );
-            Hooks.once("renderBugReportForm", (app, elem) => {
-              elem = elem[0];
-
-              // Add Confliction Package Dropdown
-              elem
-                .querySelector('input[type="text"][name="formFields.bugTitle"]')
-                .closest(".form-group-stacked")
-                .insertAdjacentHTML(
-                  "afterend",
-                  `<div class="form-group-stacked">
+                // Add Confliction Package Dropdown
+                elem
+                  .querySelector(
+                    'input[type="text"][name="formFields.bugTitle"]',
+                  )
+                  .closest(".form-group-stacked")
+                  .insertAdjacentHTML(
+                    "afterend",
+                    `<div class="form-group-stacked">
 							<div class="form-group-stacked">
 								<label>${MODULE.localize("dialog.bugReporter.selectLabel")}</label>
 								<select name="${MODULE.ID}.formFields.selectLabel">
@@ -1059,199 +1062,211 @@ export class MMP {
 								</select>
 							</div>
 						</div>`,
+                  );
+
+                // Add Modules to Dropdown
+                const elemOptGroup = elem.querySelector(
+                  `select[name="${MODULE.ID}.formFields.selectLabel"] optgroup[label="${MODULE.localize("dialog.bugReporter.optGroup.modules")}"]`,
                 );
+                for (const module of game.modules) {
+                  elemOptGroup.insertAdjacentHTML(
+                    "beforeend",
+                    `<option value="${module.id}" data-type="module">${module.title}</option>`,
+                  );
+                }
 
-              // Add Modules to Dropdown
-              const elemOptGroup = elem.querySelector(
-                `select[name="${MODULE.ID}.formFields.selectLabel"] optgroup[label="${MODULE.localize("dialog.bugReporter.optGroup.modules")}"]`,
-              );
-              for (const module of game.modules) {
-                elemOptGroup.insertAdjacentHTML(
-                  "beforeend",
-                  `<option value="${module.id}" data-type="module">${module.title}</option>`,
-                );
-              }
-
-              // Uncheck Checkboxes
-              elem.querySelector(
-                'input[type="checkbox"][name="formFields.sendActiveModules"]',
-              ).checked = false;
-              elem.querySelector(
-                'input[type="checkbox"][name="formFields.sendModSettings"]',
-              ).checked = false;
-
-              // Hide Checkboxes
-              elem
-                .querySelector(
+                // Uncheck Checkboxes
+                elem.querySelector(
                   'input[type="checkbox"][name="formFields.sendActiveModules"]',
-                )
-                .closest(".flexrow")
-                .classList.add("hidden");
+                ).checked = false;
+                elem.querySelector(
+                  'input[type="checkbox"][name="formFields.sendModSettings"]',
+                ).checked = false;
 
-              // Hide Discord and Label
-              elem
-                .querySelector('input[type="text"][name="formFields.issuer"]')
-                .closest(".flexrow")
-                .classList.add("hidden");
+                // Hide Checkboxes
+                elem
+                  .querySelector(
+                    'input[type="checkbox"][name="formFields.sendActiveModules"]',
+                  )
+                  .closest(".flexrow")
+                  .classList.add("hidden");
 
-              // Fill Description
-              elem.querySelector(
-                'textarea[name="formFields.bugDescription"]',
-              ).value = `- `;
-              elem
-                .querySelector('textarea[name="formFields.bugDescription"]')
-                .insertAdjacentHTML(
-                  "afterend",
-                  `<div class="${MODULE.ID}-bug-reporter-preview hidden"></div>`,
+                // Hide Discord and Label
+                elem
+                  .querySelector('input[type="text"][name="formFields.issuer"]')
+                  .closest(".flexrow")
+                  .classList.add("hidden");
+
+                // Fill Description
+                elem.querySelector(
+                  'textarea[name="formFields.bugDescription"]',
+                ).value = `- `;
+                elem
+                  .querySelector('textarea[name="formFields.bugDescription"]')
+                  .insertAdjacentHTML(
+                    "afterend",
+                    `<div class="${MODULE.ID}-bug-reporter-preview hidden"></div>`,
+                  );
+
+                // Add Toggle Button
+                const elemLabel = elem
+                  .querySelector('textarea[name="formFields.bugDescription"]')
+                  .closest("div.form-group-stacked")
+                  .querySelector("label");
+                elemLabel.insertAdjacentHTML(
+                  "beforeend",
+                  `<button type="button" data-action="toggle">${MODULE.localize("dialog.bugReporter.toggle.preview")}</button>`,
                 );
+                elemLabel
+                  .querySelector('button[data-action="toggle"]')
+                  .addEventListener("click", (event) => {
+                    const elemTextarea = elem.querySelector(
+                      'textarea[name="formFields.bugDescription"]',
+                    );
+                    const elemPreview = elem.querySelector(
+                      `div.${MODULE.ID}-bug-reporter-preview`,
+                    );
+                    const isPreview = elemTextarea.classList.contains("hidden");
 
-              // Add Toggle Button
-              const elemLabel = elem
-                .querySelector('textarea[name="formFields.bugDescription"]')
-                .closest("div.form-group-stacked")
-                .querySelector("label");
-              elemLabel.insertAdjacentHTML(
-                "beforeend",
-                `<button type="button" data-action="toggle">${MODULE.localize("dialog.bugReporter.toggle.preview")}</button>`,
-              );
-              elemLabel
-                .querySelector('button[data-action="toggle"]')
-                .addEventListener("click", (event) => {
-                  const elemTextarea = elem.querySelector(
-                    'textarea[name="formFields.bugDescription"]',
-                  );
-                  const elemPreview = elem.querySelector(
-                    `div.${MODULE.ID}-bug-reporter-preview`,
-                  );
-                  const isPreview = elemTextarea.classList.contains("hidden");
+                    // Set Preview Height to Textarea Height
+                    elemPreview.style.minHeight = `${elemTextarea.offsetHeight}px`;
 
-                  // Set Preview Height to Textarea Height
-                  elemPreview.style.minHeight = `${elemTextarea.offsetHeight}px`;
+                    // Toggle View State
+                    elemTextarea.classList.toggle("hidden", !isPreview);
+                    elemPreview.classList.toggle("hidden", isPreview);
 
-                  // Toggle View State
-                  elemTextarea.classList.toggle("hidden", !isPreview);
-                  elemPreview.classList.toggle("hidden", isPreview);
-
-                  // Convert Textarea into HTML
-                  const selectedPackage = elem.querySelector(
-                    `select[name="${MODULE.ID}.formFields.selectLabel"] option:checked`,
-                  );
-                  let packageDetails = { id: "", name: "", version: "0.0.0 " };
-                  if (selectedPackage.dataset.type == "core")
-                    packageDetails = {
+                    // Convert Textarea into HTML
+                    const selectedPackage = elem.querySelector(
+                      `select[name="${MODULE.ID}.formFields.selectLabel"] option:checked`,
+                    );
+                    let packageDetails = {
                       id: "",
-                      name: game.i18n.localize("Foundry Virtual Tabletop"),
-                      version: game.version,
+                      name: "",
+                      version: "0.0.0 ",
                     };
-                  else if (selectedPackage.dataset.type == "system")
-                    packageDetails = {
-                      id: game.system.id,
-                      name: game.system.title,
-                      version: game.system.version,
+                    if (selectedPackage.dataset.type == "core")
+                      packageDetails = {
+                        id: "",
+                        name: game.i18n.localize("Foundry Virtual Tabletop"),
+                        version: game.version,
+                      };
+                    else if (selectedPackage.dataset.type == "system")
+                      packageDetails = {
+                        id: game.system.id,
+                        name: game.system.title,
+                        version: game.system.version,
+                      };
+                    else if (selectedPackage.dataset.type == "module")
+                      packageDetails = {
+                        id: game.modules.get(selectedPackage.value).id,
+                        name: game.modules.get(selectedPackage.value).title,
+                        version: game.modules.get(selectedPackage.value)
+                          .version,
+                      };
+
+                    const markdown = [elemTextarea.value];
+                    markdown.push(`\n\n`);
+                    markdown.push(`### Conflicts With`);
+                    if (packageDetails.id != "")
+                      markdown.push(`**Package ID:** ${packageDetails.id}`);
+                    markdown.push(`**Package Name:** ${packageDetails.name}`);
+                    markdown.push(
+                      `**Package Version:** ${packageDetails.version}`,
+                    );
+                    markdown.push(
+                      `**Package Type:** ${selectedPackage.dataset.type}`,
+                    );
+
+                    elemPreview.innerHTML = new showdown.Converter().makeHtml(
+                      markdown.join("\n\n"),
+                    );
+
+                    // Toggle Text
+                    event.target.innerHTML = MODULE.localize(
+                      `dialog.bugReporter.toggle.${isPreview ? "preview" : "write"}`,
+                    );
+
+                    app.setPosition();
+                  });
+
+                // Hide Submit Button
+                elem
+                  .querySelector('button[type="submit"]')
+                  .classList.add("hidden");
+                elem
+                  .querySelector('button[type="submit"]')
+                  .insertAdjacentHTML(
+                    "beforebegin",
+                    `<button type="button" data-type="submit">${elem.querySelector('button[type="submit"]').innerHTML}</button>`,
+                  );
+
+                elem
+                  .querySelector('button[data-type="submit"]')
+                  .addEventListener("click", () => {
+                    const elemTextarea = elem.querySelector(
+                      'textarea[name="formFields.bugDescription"]',
+                    );
+
+                    // Get Conflict Package Details
+                    const selectedPackage = elem.querySelector(
+                      `select[name="${MODULE.ID}.formFields.selectLabel"] option:checked`,
+                    );
+                    let packageDetails = {
+                      id: "",
+                      name: "",
+                      version: "0.0.0 ",
                     };
-                  else if (selectedPackage.dataset.type == "module")
-                    packageDetails = {
-                      id: game.modules.get(selectedPackage.value).id,
-                      name: game.modules.get(selectedPackage.value).title,
-                      version: game.modules.get(selectedPackage.value).version,
-                    };
+                    if (selectedPackage.dataset.type == "core")
+                      packageDetails = {
+                        id: "",
+                        name: game.i18n.localize("Foundry Virtual Tabletop"),
+                        version: game.version,
+                      };
+                    else if (selectedPackage.dataset.type == "system")
+                      packageDetails = {
+                        id: game.system.id,
+                        name: game.system.title,
+                        version: game.system.version,
+                      };
+                    else if (selectedPackage.dataset.type == "module")
+                      packageDetails = {
+                        id: game.modules.get(selectedPackage.value).id,
+                        name: game.modules.get(selectedPackage.value).title,
+                        version: game.modules.get(selectedPackage.value)
+                          .version,
+                      };
 
-                  const markdown = [elemTextarea.value];
-                  markdown.push(`\n\n`);
-                  markdown.push(`### Conflicts With`);
-                  if (packageDetails.id != "")
-                    markdown.push(`**Package ID:** ${packageDetails.id}`);
-                  markdown.push(`**Package Name:** ${packageDetails.name}`);
-                  markdown.push(
-                    `**Package Version:** ${packageDetails.version}`,
-                  );
-                  markdown.push(
-                    `**Package Type:** ${selectedPackage.dataset.type}`,
-                  );
+                    const markdown = [elemTextarea.value];
+                    markdown.push(`\n`);
+                    markdown.push(`### Conflicts With`);
+                    if (packageDetails.id != "")
+                      markdown.push(`**Package ID:** ${packageDetails.id}`);
+                    markdown.push(`**Package Name:** ${packageDetails.name}`);
+                    markdown.push(
+                      `**Package Version:** ${packageDetails.version}`,
+                    );
+                    markdown.push(
+                      `**Package Type:** ${selectedPackage.dataset.type}`,
+                    );
 
-                  elemPreview.innerHTML = new showdown.Converter().makeHtml(
-                    markdown.join("\n\n"),
-                  );
+                    elemTextarea.value = markdown.join("\n");
+                    elem.querySelector('button[type="submit"]').click();
+                  });
 
-                  // Toggle Text
-                  event.target.innerHTML = MODULE.localize(
-                    `dialog.bugReporter.toggle.${isPreview ? "preview" : "write"}`,
-                  );
-
-                  app.setPosition();
-                });
-
-              // Hide Submit Button
-              elem
-                .querySelector('button[type="submit"]')
-                .classList.add("hidden");
-              elem
-                .querySelector('button[type="submit"]')
-                .insertAdjacentHTML(
-                  "beforebegin",
-                  `<button type="button" data-type="submit">${elem.querySelector('button[type="submit"]').innerHTML}</button>`,
+                app.setPosition();
+              });
+              game.modules
+                .get("bug-reporter")
+                .api.bugWorkflow(
+                  MODULE.ID,
+                  `Module Conflict - ${moduleDetails.title} v${moduleDetails.version}`,
+                  ``,
                 );
-
-              elem
-                .querySelector('button[data-type="submit"]')
-                .addEventListener("click", () => {
-                  const elemTextarea = elem.querySelector(
-                    'textarea[name="formFields.bugDescription"]',
-                  );
-
-                  // Get Conflict Package Details
-                  const selectedPackage = elem.querySelector(
-                    `select[name="${MODULE.ID}.formFields.selectLabel"] option:checked`,
-                  );
-                  let packageDetails = { id: "", name: "", version: "0.0.0 " };
-                  if (selectedPackage.dataset.type == "core")
-                    packageDetails = {
-                      id: "",
-                      name: game.i18n.localize("Foundry Virtual Tabletop"),
-                      version: game.version,
-                    };
-                  else if (selectedPackage.dataset.type == "system")
-                    packageDetails = {
-                      id: game.system.id,
-                      name: game.system.title,
-                      version: game.system.version,
-                    };
-                  else if (selectedPackage.dataset.type == "module")
-                    packageDetails = {
-                      id: game.modules.get(selectedPackage.value).id,
-                      name: game.modules.get(selectedPackage.value).title,
-                      version: game.modules.get(selectedPackage.value).version,
-                    };
-
-                  const markdown = [elemTextarea.value];
-                  markdown.push(`\n`);
-                  markdown.push(`### Conflicts With`);
-                  if (packageDetails.id != "")
-                    markdown.push(`**Package ID:** ${packageDetails.id}`);
-                  markdown.push(`**Package Name:** ${packageDetails.name}`);
-                  markdown.push(
-                    `**Package Version:** ${packageDetails.version}`,
-                  );
-                  markdown.push(
-                    `**Package Type:** ${selectedPackage.dataset.type}`,
-                  );
-
-                  elemTextarea.value = markdown.join("\n");
-                  elem.querySelector('button[type="submit"]').click();
-                });
-
-              app.setPosition();
-            });
-            game.modules
-              .get("bug-reporter")
-              .api.bugWorkflow(
-                MODULE.ID,
-                `Module Conflict - ${moduleDetails.title} v${moduleDetails.version}`,
-                ``,
-              );
+            },
           },
-        },
-      ]);
+        ],
+        { jQuery: false },
+      );
 
       // Put existing tags in container
       const overviewContainer = elemPackage.querySelector(".package-overview");
@@ -1868,9 +1883,10 @@ export class MMP {
               }
 
               new ContextMenu(
-                $(settingLabel),
+                settingLabel,
                 '[data-action="sync"]',
                 getActiveUser(),
+                { jQuery: false },
               );
             }
 
