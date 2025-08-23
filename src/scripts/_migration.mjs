@@ -1,13 +1,14 @@
 // GET MODULE CORE
 import { MODULE } from "./_module.mjs";
+import { isNewerVersion } from "./init.mjs";
 
 Hooks.once("ready", async () => {
   if (
-    foundry.utils.isNewerVersion(
+    isNewerVersion(
       "2.0.4",
       MODULE.setting("clientMigratedVersion"),
     ) ||
-    foundry.utils.isNewerVersion(
+    isNewerVersion(
       "2.0.4",
       MODULE.setting("worldMigratedVersion"),
     )
@@ -49,7 +50,7 @@ Hooks.once("ready", async () => {
     });
   }
   if (
-    foundry.utils.isNewerVersion(
+    isNewerVersion(
       "2.1.2",
       MODULE.setting("worldMigratedVersion"),
     )
@@ -73,7 +74,7 @@ Hooks.once("ready", async () => {
     });
   }
   if (
-    foundry.utils.isNewerVersion(
+    isNewerVersion(
       "2.1.4",
       MODULE.setting("clientMigratedVersion"),
     )

@@ -8,7 +8,7 @@ import { PreviewDialog } from "./dialogs/preview.mjs";
 import { ExportDialog } from "./dialogs/export.mjs";
 import { ImportDialog } from "./dialogs/import.mjs";
 import { PresetDialog } from "./dialogs/presets.mjs";
-import { ModuleManagement, SettingsConfig, mergeObject } from "./init.mjs";
+import { ModuleManagement, SettingsConfig, mergeObject, isNewerVersion } from "./init.mjs";
 
 // DEFINE MODULE CLASS
 export class MMP {
@@ -323,7 +323,7 @@ export class MMP {
         let hasSeen =
           MODULE.setting("trackedChangelogs")?.[key]?.hasSeen ?? false;
         if (
-          foundry.utils.isNewerVersion(
+          isNewerVersion(
             version ?? "0.0.0",
             MODULE.setting("trackedChangelogs")?.[key]?.version ?? "0.0.0",
           )
@@ -759,19 +759,19 @@ export class MMP {
         (conflict?.type ?? "").toLowerCase() == "system"
       ) {
         if (
-          foundry.utils.isNewerVersion(
+          isNewerVersion(
             game.modules.get(conflict.id)?.version ?? "0.0.0",
             conflict.compatibility.version ?? "0.0.0",
           )
         )
           return false;
         return (
-          (foundry.utils.isNewerVersion(
+          (isNewerVersion(
             conflictVersion,
             conflict.compatibility.minimum ?? "0.0.0",
           ) ||
             conflictVersion == conflict.compatibility.minimum) &&
-          (foundry.utils.isNewerVersion(
+          (isNewerVersion(
             conflict.compatibility.maximum ?? conflictVersion,
             conflictVersion,
           ) ||
@@ -781,12 +781,12 @@ export class MMP {
       }
 
       return (
-        (foundry.utils.isNewerVersion(
+        (isNewerVersion(
           conflictVersion,
           conflict.compatibility.minimum ?? "0.0.0",
         ) ||
           conflictVersion == conflict.compatibility.minimum) &&
-        (foundry.utils.isNewerVersion(
+        (isNewerVersion(
           conflict.compatibility.maximum,
           conflictVersion,
         ) ||

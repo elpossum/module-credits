@@ -16,9 +16,10 @@ import "../styles/module.css";
 // HMR
 import { Load } from "./hmr.mjs";
 
-export let ModuleManagement;
-export let SettingsConfig;
-export let mergeObject;
+export const ModuleManagement = foundry.applications.sidebar.apps.ModuleManagement;
+export const SettingsConfig = foundry.applications.settings.SettingsConfig;
+export const mergeObject = foundry.utils.mergeObject;
+export const isNewerVersion = foundry.utils.isNewerVersion;
 
 Load.listen();
 
@@ -280,9 +281,6 @@ Hooks.once("lib-themer.Ready", (API) => {
 // FOUNDRY HOOKS -> READY
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
 Hooks.once("init", () => {
-  ModuleManagement = foundry.applications.sidebar.apps.ModuleManagement;
-  SettingsConfig = foundry.applications.settings.SettingsConfig;
-  mergeObject = foundry.utils.mergeObject;
   Hooks.on("renderApplicationV2", MMP.renderSidebarTab);
 });
 Hooks.once("ready", async () => {
