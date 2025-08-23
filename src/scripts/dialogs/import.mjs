@@ -9,8 +9,8 @@ export class ImportDialog extends FormApplication {
     // Format Module Data
     for (const key of Object.keys(moduleData)) {
       moduleData[key].isInstalled = game.modules.has(key) ?? false;
-      /*moduleData[key].isNewerVersion = isNewerVersion(module?.version ?? "0.0.0", game.modules.get(key)?.data?.version ?? "0.0.0");
-			moduleData[key].isCurrentVersion = !moduleData[key].isNewerVersion && (module?.version ?? "0.0.0") == (game.modules.get(key)?.data?.version ?? "0.0.0");
+      /*moduleData[key].isNewerVersion = isNewerVersion(module?.version ?? "0.0.0", game.modules.get(key)?.version ?? "0.0.0");
+			moduleData[key].isCurrentVersion = !moduleData[key].isNewerVersion && (module?.version ?? "0.0.0") == (game.modules.get(key)?.version ?? "0.0.0");
 			moduleData[key].isOlderVersion = !moduleData[key].isNewerVersion && !moduleData[key].isCurrentVersion*/
       moduleData[key].hasClientSettings =
         moduleData[key].isInstalled &&

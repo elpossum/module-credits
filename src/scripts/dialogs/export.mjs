@@ -10,9 +10,9 @@ export class ExportDialog extends FormApplication {
       if ($(module).find('input[type="checkbox"]').is(":checked")) {
         const moduleID = $(module).data("module-id");
         moduleData[moduleID] = {
-          title: game.modules.get(moduleID)?.data?.title ?? "",
-          version: game.modules.get(moduleID)?.data?.version ?? "0.0.0",
-          bugs: game.modules.get(moduleID)?.data?.bugs ?? false,
+          title: game.modules.get(moduleID)?.title ?? "",
+          version: game.modules.get(moduleID)?.version ?? "0.0.0",
+          bugs: game.modules.get(moduleID)?.bugs ?? false,
           settings: {},
         };
       }
