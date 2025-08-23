@@ -16,10 +16,12 @@ import "../styles/module.css";
 // HMR
 import { Load } from "./hmr.mjs";
 
-export const ModuleManagement = foundry.applications.sidebar.apps.ModuleManagement;
+export const ModuleManagement =
+  foundry.applications.sidebar.apps.ModuleManagement;
 export const SettingsConfig = foundry.applications.settings.SettingsConfig;
 export const mergeObject = foundry.utils.mergeObject;
 export const isNewerVersion = foundry.utils.isNewerVersion;
+export const ContextMenu = foundry.applications.ux.ContextMenu.implementation;
 
 Load.listen();
 

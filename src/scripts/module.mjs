@@ -8,7 +8,13 @@ import { PreviewDialog } from "./dialogs/preview.mjs";
 import { ExportDialog } from "./dialogs/export.mjs";
 import { ImportDialog } from "./dialogs/import.mjs";
 import { PresetDialog } from "./dialogs/presets.mjs";
-import { ModuleManagement, SettingsConfig, mergeObject, isNewerVersion } from "./init.mjs";
+import {
+  ModuleManagement,
+  SettingsConfig,
+  mergeObject,
+  isNewerVersion,
+  ContextMenu,
+} from "./init.mjs";
 
 // DEFINE MODULE CLASS
 export class MMP {
@@ -127,7 +133,8 @@ export class MMP {
     // IF URL HAS FILE EXTENSION, ASSUME WE ARE LOOKING FOR A SPECIFIC FILE
     const getFile = url.split("/").pop().includes(".");
 
-    return await foundry.applications.apps.FilePicker.implementation.browse("user", url, options)
+    return await foundry.applications.apps.FilePicker.implementation
+      .browse("user", url, options)
       .then((response) => {
         const files = getFile
           ? []
@@ -549,51 +556,53 @@ export class MMP {
               }
 
               // Read File Data
-              foundry.utils.readTextFromFile(fileData).then(async (response) => {
-                try {
-                  // Convert Response into JSON
-                  const responseJSON = JSON.parse(response);
-                  let moduleData = {};
-                  let importType = MODULE.ID;
+              foundry.utils
+                .readTextFromFile(fileData)
+                .then(async (response) => {
+                  try {
+                    // Convert Response into JSON
+                    const responseJSON = JSON.parse(response);
+                    let moduleData = {};
+                    let importType = MODULE.ID;
 
-                  // Check if Import is for TidyUI
-                  if (Object.hasOwn(responseJSON, "activeModules") ?? false) {
-                    importType = "tidy-ui_game-settings";
-                    responseJSON.activeModules.forEach((module) => {
-                      moduleData[module.id] = {
-                        title: module.title,
-                        version: module.version,
-                        settings: {
-                          client: undefined,
-                          world: undefined,
-                        },
-                      };
-                    });
-                  } else if (
-                    Object.hasOwn(
-                      responseJSON?.[Object.keys(responseJSON)[0]],
-                      "title",
-                    ) ??
-                    false
-                  ) {
-                    moduleData = responseJSON;
-                  } else {
+                    // Check if Import is for TidyUI
+                    if (Object.hasOwn(responseJSON, "activeModules") ?? false) {
+                      importType = "tidy-ui_game-settings";
+                      responseJSON.activeModules.forEach((module) => {
+                        moduleData[module.id] = {
+                          title: module.title,
+                          version: module.version,
+                          settings: {
+                            client: undefined,
+                            world: undefined,
+                          },
+                        };
+                      });
+                    } else if (
+                      Object.hasOwn(
+                        responseJSON?.[Object.keys(responseJSON)[0]],
+                        "title",
+                      ) ??
+                      false
+                    ) {
+                      moduleData = responseJSON;
+                    } else {
+                      ui.notifications.error(
+                        `<strong>${MODULE.TITLE}</strong> Unable to determine how to load file.`,
+                      );
+                      return false;
+                    }
+
+                    // Show Import Dialog
+                    new ImportDialog(moduleData, importType).render(true);
+                  } catch (error) {
+                    MODULE.error("Failed to read selected file", error);
                     ui.notifications.error(
-                      `<strong>${MODULE.TITLE}</strong> Unable to determine how to load file.`,
+                      `<strong>${MODULE.TITLE}</strong> Failed to read selected file.`,
                     );
                     return false;
                   }
-
-                  // Show Import Dialog
-                  new ImportDialog(moduleData, importType).render(true);
-                } catch (error) {
-                  MODULE.error("Failed to read selected file", error);
-                  ui.notifications.error(
-                    `<strong>${MODULE.TITLE}</strong> Failed to read selected file.`,
-                  );
-                  return false;
-                }
-              });
+                });
             })
             .trigger("click");
           //new ImportDialog({}).render(true);
@@ -786,10 +795,7 @@ export class MMP {
           conflict.compatibility.minimum ?? "0.0.0",
         ) ||
           conflictVersion == conflict.compatibility.minimum) &&
-        (isNewerVersion(
-          conflict.compatibility.maximum,
-          conflictVersion,
-        ) ||
+        (isNewerVersion(conflict.compatibility.maximum, conflictVersion) ||
           conflict.compatibility.maximum == conflictVersion)
       );
     }
@@ -878,7 +884,7 @@ export class MMP {
         : false;
 
       // Add Ability to Rename Package Title for Better Sorting
-      new foundry.applications.ux.ContextMenu.implementation($(elemPackage), ".package-overview ", [
+      new ContextMenu($(elemPackage), ".package-overview ", [
         {
           name: `${MODULE.localize("dialog.moduleManagement.contextMenu.renameModule")}`,
           icon: '<i class="fa-duotone fa-pen-to-square"></i>',
@@ -1726,11 +1732,7 @@ export class MMP {
                 // Update Modules and Reload Game
                 MODULE.setting("storedRollback", {}).then(() => {
                   game.settings
-                    .set(
-                      `core`,
-                      `${ModuleManagement.SETTING}`,
-                      rollBackModules,
-                    )
+                    .set(`core`, `${ModuleManagement.SETTING}`, rollBackModules)
                     .then(() => {
                       MODULE.setting(
                         "presetsRollbacks",
@@ -1870,7 +1872,7 @@ export class MMP {
                 return syncUsers;
               }
 
-              new foundry.applications.ux.ContextMenu.implementation(
+              new ContextMenu(
                 $(settingLabel),
                 '[data-action="sync"]',
                 getActiveUser(),
