@@ -483,10 +483,6 @@
     &.fa-arrows-rotate {
       cursor: var(--cursor-pointer);
     }
-
-    &[data-action="lock"] + [data-action="sync"] {
-      display: none;
-    }
   }
   &.module-credits-hide-filter-options
     .window-content

@@ -1806,11 +1806,6 @@ export class MMP {
             game.user.isGM &&
             settingID
           ) {
-            const tooltipString = `dialog.clientSettings.tooltips.${settingDetails.scope}Setting`;
-            settingLabel.insertAdjacentHTML(
-              "afterbegin",
-              `<i class="fa-solid fa-user" data-tooltip="${MODULE.localize(tooltipString)}" data-tooltip-direction="UP"></i>`,
-            );
             if (this.socket) {
               settingLabel.insertAdjacentHTML(
                 "afterbegin",
@@ -1957,6 +1952,14 @@ export class MMP {
             settingLabel.insertAdjacentHTML(
               "afterbegin",
               `<i class="fa-solid fa-square-list" data-tooltip="${MODULE.localize("dialog.clientSettings.tooltips.menuSetting")}" data-tooltip-direction="UP"></i>`,
+            );
+          }
+
+          if (["client", "user"].includes(settingDetails.scope)) {
+            const tooltipString = `dialog.clientSettings.tooltips.${settingDetails.scope}Setting`;
+            settingLabel.insertAdjacentHTML(
+              "afterbegin",
+              `<i class="fa-solid fa-user" data-tooltip="${MODULE.localize(tooltipString)}" data-tooltip-direction="UP"></i>`,
             );
           }
         }
