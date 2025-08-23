@@ -1,0 +1,13 @@
+* text=auto
+*.md text diff=markdown
+LICENSE text
+*.js text
+*.mjs text
+*.hbs text
+*.css text diff=css
+*.json text
+*.yml text
+*.png binary
+.*ignore text
+*.lock text
+
