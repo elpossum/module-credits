@@ -282,9 +282,7 @@ Hooks.once("lib-themer.Ready", (API) => {
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
 // FOUNDRY HOOKS -> READY
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
-Hooks.once("init", () => {
-  Hooks.on("renderApplicationV2", (app, elem) => MMP.renderSidebarTab(app, elem));
-});
+
 Hooks.once("ready", async () => {
   //await MIGRATE.init();
 
@@ -294,8 +292,14 @@ Hooks.once("ready", async () => {
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
 // FOUNDRY HOOKS -> MODULE FUNCTIONS
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
-Hooks.on("renderModuleManagement", (app, elem) => MMP.renderModuleManagement(app, elem));
-Hooks.on("renderSettingsConfig", (app, elem) => MMP.renderSettingsConfig(app, elem));
+Hooks.on("renderApplicationV2", (app, elem) => MMP.renderSidebarTab(app, elem));
+
+Hooks.on("renderModuleManagement", (app, elem) =>
+  MMP.renderModuleManagement(app, elem),
+);
+Hooks.on("renderSettingsConfig", (app, elem) =>
+  MMP.renderSettingsConfig(app, elem),
+);
 
 Handlebars.registerHelper("incIndex", function (value) {
   return parseInt(value) + 1;
