@@ -1,0 +1,116 @@
+/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
+/* CSS magic for flex-wrap                                            */
+/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
+@keyframes block-detection {
+  from {
+    --is-block-start: initial;
+    --no-block-start: ;
+  }
+  to {
+    --is-block-end: initial;
+    --no-block-end: ;
+  }
+}
+
+@keyframes inline-detection {
+  from {
+    --is-inline-start: initial;
+    --no-inline-start: ;
+  }
+  to {
+    --is-inline-end: initial;
+    --no-inline-end: ;
+  }
+}
+
+.flexrow {
+  --is-block-start: ;
+  --no-block-start: initial;
+  --is-block-end: ;
+  --no-block-end: initial;
+  --is-inline-start: ;
+  --no-inline-start: initial;
+  --is-inline-end: ;
+  --no-inline-end: initial;
+}
+
+#settings {
+  section.info div.system-links {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    overflow: hidden;
+
+    a {
+      flex: 1;
+      background: var(--color-cool-5-50);
+      border: 1px solid var(--color-light-5);
+      text-transform: uppercase;
+      font-size: var(--font-size-12);
+      padding: 0.25rem;
+      height: 2rem;
+      align-content: center;
+      text-align: center;
+
+      animation:
+        block-detection linear forwards,
+        block-detection linear reverse backwards,
+        inline-detection linear forwards,
+        inline-detection linear reverse backwards;
+
+      animation-timeline: view(), view(), view(inline), view(inline);
+
+      animation-range:
+        exit 0 exit 4px,
+        contain 0 contain 4px,
+        exit 0 exit 4px,
+        contain 0 contain 4px;
+
+      border-start-start-radius: var(
+        --is-block-start,
+        var(--is-inline-start, 3px)
+      );
+      border-end-start-radius: var(--is-block-end, var(--is-inline-start, 3px));
+      border-start-end-radius: var(--is-block-start, var(--is-inline-end, 3px));
+      border-end-end-radius: var(--is-block-end, var(--is-inline-end, 3px));
+      border-top-style: var(--is-block-start, solid);
+      border-right-style: var(--is-inline-end, solid);
+
+      &:hover {
+        background-color: var(--color-warm-2);
+        color: var(--color-light-1);
+        border-color: var(--color-light-3);
+      }
+
+      i {
+        margin: 0px;
+      }
+
+      &:first-of-type:last-of-type {
+        font-size: var(--font-size-12);
+
+        i {
+          margin-right: 0.25rem;
+        }
+      }
+    }
+  }
+
+  section.settings button[data-app="modules"] small {
+    &:before {
+      content: "(";
+    }
+
+    &:after {
+      content: ")";
+    }
+
+    .modules-count-total:before {
+      content: " / ";
+    }
+  }
+
+  .notification-pip.update {
+    margin-right: 0.25rem;
+  }
+}

@@ -1,0 +1,68 @@
+#module-credits-preset-dialog {
+  #module-credits-presets-header,
+  #module-credits-presets-list {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  #module-credits-presets-header li {
+    border-bottom: 1px solid var(--color-border-light-primary);
+    font-size: var(--font-size-14);
+    font-weight: 600;
+  }
+
+  #module-credits-presets-list {
+    max-height: 177px;
+    overflow-y: auto;
+
+    li {
+      border-bottom: 1px solid var(--color-border-light-primary);
+      display: flex;
+      padding: 0.25rem 0px;
+
+      label {
+        align-self: center;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      button {
+        border-radius: 0px;
+        border-right-width: 0px;
+        flex: 0 0 30px;
+        margin: 0px;
+        text-align: center;
+
+        &:first-of-type {
+          border-bottom-left-radius: 3px;
+          border-top-left-radius: 3px;
+        }
+
+        &:last-of-type {
+          border-bottom-right-radius: 3px;
+          border-top-right-radius: 3px;
+          border-right-width: 1px;
+        }
+
+        i {
+          margin: 0px;
+        }
+      }
+    }
+  }
+}
+.dialog input[name="module-credits-preset-title"] {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  width: 100%;
+
+  + textarea {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-top-width: 0px;
+    border-color: var(--color-border-light-tertiary);
+  }
+}

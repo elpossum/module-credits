@@ -1,0 +1,12 @@
+#module-credits-export-dialog .dialog-content {
+  h3 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem;
+    font-weight: normal;
+  }
+
+  textarea {
+    width: 100%;
+    white-space: pre;
+  }
+}

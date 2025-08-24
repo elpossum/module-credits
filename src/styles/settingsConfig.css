@@ -1,0 +1,37 @@
+#settings-config {
+  .categories .tab .form-group label i {
+    padding-right: 0.25rem;
+    &.fa-lock,
+    &.fa-unlock,
+    &.fa-arrows-rotate {
+      cursor: var(--cursor-pointer);
+    }
+  }
+  &.module-credits-hide-filter-options
+    .window-content
+    aside[data-application-part="sidebar"] {
+    display: none;
+  }
+}
+
+/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
+/* Conflicts                                                          */
+/* ────────────────────────────── ⋆⋅☆⋅⋆ ────────────────────────────── */
+.module-credits-tooltip-list {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  text-align: left;
+
+  li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    &:last-of-type {
+      border-width: 0px;
+      margin: 0px;
+      padding: 0px;
+    }
+  }
+}

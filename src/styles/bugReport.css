@@ -1,0 +1,29 @@
+#bug-report {
+  label.wide {
+    align-items: end;
+    display: flex;
+    justify-content: space-between;
+
+    button[data-action="toggle"] {
+      border: 1px solid var(--color-border-dark);
+      border-radius: 3px 3px 0px 0px;
+      flex: 0;
+      margin-bottom: -1px;
+    }
+
+    + textarea {
+      border-top-right-radius: 0px;
+    }
+  }
+
+  .module-credits-bug-reporter-preview {
+    width: 100%;
+    min-height: 50px;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border-dark);
+    border-radius: 3px;
+    border-top-right-radius: 0px;
+    overflow: auto hidden;
+  }
+}
