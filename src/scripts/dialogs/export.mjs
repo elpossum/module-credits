@@ -11,7 +11,7 @@ Hooks.once(
     (ExportDialog = class ExportDialog extends (
       HandlebarsApplicationMixin(ApplicationV2)
     ) {
-      constructor(packages) {
+      constructor({ packages }) {
         super();
 
         const moduleData = {};

@@ -526,9 +526,9 @@ export class MMP {
       elem
         .querySelector('search.flexrow button[data-action="export"]')
         .addEventListener("click", () => {
-          new ExportDialog(
-            elem.querySelectorAll(".package-list li.package"),
-          ).render(true);
+          new ExportDialog({
+            packages: elem.querySelectorAll(".package-list li.package"),
+          }).render(true);
         });
 
       // Add Import Button
@@ -594,7 +594,7 @@ export class MMP {
                     }
 
                     // Show Import Dialog
-                    new ImportDialog(moduleData, importType).render(true);
+                    new ImportDialog({ moduleData, importType }).render(true);
                   } catch (error) {
                     MODULE.error("Failed to read selected file", error);
                     ui.notifications.error(
@@ -909,10 +909,10 @@ export class MMP {
                       mergeObject(
                         MODULE.setting("renamedModules"),
                         {
-                          [packageElem.closest("li.package").dataset
-                            .moduleId]: elemDialog[0].querySelector(
-                            `input[name="${MODULE.ID}-rename-module-title"]`,
-                          ).value,
+                          [packageElem.closest("li.package").dataset.moduleId]:
+                            elemDialog[0].querySelector(
+                              `input[name="${MODULE.ID}-rename-module-title"]`,
+                            ).value,
                         },
                         { inplace: false },
                       ),
@@ -972,7 +972,8 @@ export class MMP {
                 packageElem.querySelector(
                   '.package-title input[type="checkbox"]',
                 ).checked = true;
-                packageElem.querySelector('.package-title input[type="checkbox"]')
+                packageElem
+                  .querySelector('.package-title input[type="checkbox"]')
                   .dispatchEvent(new Event("change"));
 
                 const lockedCount = Object.keys(
@@ -1001,7 +1002,8 @@ export class MMP {
               const lockedModules = MODULE.setting("lockedModules");
               delete lockedModules[moduleKey];
               MODULE.setting("lockedModules", lockedModules).then(() => {
-                packageElem.querySelector(".package-title i.fa-duotone.fa-lock")
+                packageElem
+                  .querySelector(".package-title i.fa-duotone.fa-lock")
                   .remove();
 
                 if (MODULE.setting("disableLockedModules")) {

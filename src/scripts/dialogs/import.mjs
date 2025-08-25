@@ -2,318 +2,188 @@
 import { MODULE } from "../_module.mjs";
 import { ModuleManagement, SettingsConfig } from "../init.mjs";
 
-export class ImportDialog extends FormApplication {
-  constructor(moduleData, importType) {
-    super();
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-    // Format Module Data
-    for (const key of Object.keys(moduleData)) {
-      moduleData[key].isInstalled = game.modules.has(key) ?? false;
-      /*moduleData[key].isNewerVersion = isNewerVersion(module?.version ?? "0.0.0", game.modules.get(key)?.version ?? "0.0.0");
-			moduleData[key].isCurrentVersion = !moduleData[key].isNewerVersion && (module?.version ?? "0.0.0") == (game.modules.get(key)?.version ?? "0.0.0");
-			moduleData[key].isOlderVersion = !moduleData[key].isNewerVersion && !moduleData[key].isCurrentVersion*/
-      moduleData[key].hasClientSettings =
-        moduleData[key].isInstalled &&
-        (moduleData[key]?.settings?.client ?? false);
-      moduleData[key].hasWorldSettings =
-        moduleData[key].isInstalled &&
-        (moduleData[key]?.settings?.world ?? false);
-    }
+export let ImportDialog;
 
-    this.importType = importType;
-    this.moduleData = moduleData;
-  }
+Hooks.on(
+  "i18nInit",
+  () =>
+    (ImportDialog = class ImportDialog extends (
+      HandlebarsApplicationMixin(ApplicationV2)
+    ) {
+      constructor({ moduleData, importType }) {
+        super();
 
-  static get defaultOptions() {
-    return {
-      ...super.defaultOptions,
-      title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.import")}`,
-      id: `${MODULE.ID}-import-dialog`,
-      classes: ["dialog"],
-      template: `modules/${MODULE.ID}/templates/import.hbs`,
-      resizable: false,
-      width: $(window).width() > 580 ? 580 : $(window).width() - 100,
-      height: $(window).height() > 620 ? 620 : $(window).height() - 100,
-    };
-  }
-
-  getData() {
-    return {
-      DIALOG: {
-        ID: MODULE.ID,
-        TITLE: MODULE.TITLE,
-      },
-      modules: this.moduleData,
-      IsTidyUI: this.importType == "tidy-ui_game-settings",
-      IsGM: game.user.isGM,
-    };
-  }
-
-  processSettingData(moduleID, type, settings) {
-    return new Promise((resolve) => {
-      for (const [key, setting] of Object.entries(settings)) {
-        if (type == "client") {
-          game.settings.storage
-            .get(type)
-            .setItem(`${moduleID}.${key}`, setting);
-          resolve({ moduleID, key, setting });
-        } else if (type == "world" && game.user.isGM) {
-          SocketInterface.dispatch("modifyDocument", {
-            type: "Setting",
-            action: "update",
-            data: {
-              key: `${moduleID}.${key}`,
-              value: setting,
-            },
-          }).then((response) => {
-            resolve({ moduleID, key, setting, response });
-          });
-        } else {
-          resolve(false);
+        // Format Module Data
+        for (const key of Object.keys(moduleData)) {
+          moduleData[key].isInstalled = game.modules.has(key) ?? false;
+          /*moduleData[key].isNewerVersion = isNewerVersion(module?.version ?? "0.0.0", game.modules.get(key)?.version ?? "0.0.0");
+          moduleData[key].isCurrentVersion = !moduleData[key].isNewerVersion && (module?.version ?? "0.0.0") == (game.modules.get(key)?.version ?? "0.0.0");
+          moduleData[key].isOlderVersion = !moduleData[key].isNewerVersion && !moduleData[key].isCurrentVersion*/
+          moduleData[key].hasClientSettings =
+            moduleData[key].isInstalled &&
+            (moduleData[key]?.settings?.client ?? false);
+          moduleData[key].hasWorldSettings =
+            moduleData[key].isInstalled &&
+            (moduleData[key]?.settings?.world ?? false);
         }
+
+        this.importType = importType;
+        this.moduleData = moduleData;
       }
-    });
-  }
 
-  activateListeners(html) {
-    super.activateListeners(html);
-    // All The Checkboxes
-    const totalModulesToImport = $(html).find(
-      'li[data-module] input[name="import-module"]:not([disabled])',
-    ).length;
-    let enabledModulesToImport = $(html).find(
-      'li[data-module] input[name="import-module"]:not([disabled]):checked',
-    ).length;
-    const totalClientSettingsToImport = $(html).find(
-      'li[data-module] input[name="import-settings-client"]:not([disabled])',
-    ).length;
-    let enabledClientSettingsToImport = $(html).find(
-      'li[data-module] input[name="import-settings-client"]:not([disabled]):checked',
-    ).length;
-    const totalWorldSettingsToImport = $(html).find(
-      'li[data-module] input[name="import-settings-world"]:not([disabled])',
-    ).length;
-    let enabledWorldSettingsToImport = $(html).find(
-      'li[data-module] input[name="import-settings-world"]:not([disabled]):checked',
-    ).length;
+      static DEFAULT_OPTIONS = {
+        title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.import")}`,
+        id: `${MODULE.ID}-import-dialog`,
+        classes: ["dialog"],
+        tag: "form",
+        form: {
+          handler: this.#submitForm,
+          submitOnChange: false,
+          closeOnSubmit: true,
+        },
+        window: {
+          resizable: false,
+          title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.import")}`,
+        },
+        position: {
+          width: window.innerWidth > 580 ? 580 : window.innerWidth - 100,
+          height: "auto",
+        },
+      };
 
-    // Set Import Module Checkbox Initial State
-    $(html)
-      .find('input[name="import-toggle-modules"]')
-      .prop(
-        "indeterminate",
-        enabledModulesToImport > 0 &&
-          enabledModulesToImport != totalModulesToImport,
-      );
-    $(html)
-      .find('input[name="import-toggle-modules"]')
-      .prop("checked", enabledModulesToImport == totalModulesToImport);
+      static PARTS = {
+        form: {
+          template: `modules/${MODULE.ID}/templates/import.hbs`,
+        },
+      };
 
-    // Handle When User Changes Import Checkbox State
-    $(html)
-      .find('li[data-module] input[name="import-module"]:not([disabled])')
-      .on("change", () => {
-        enabledModulesToImport = $(html).find(
-          'li[data-module] input[name="import-module"]:not([disabled]):checked',
-        ).length;
+      async _prepareContext() {
+        const context = await super._prepareContext();
+        context.DIALOG = {
+          ID: MODULE.ID,
+          TITLE: MODULE.TITLE,
+        };
+        context.modules = this.moduleData;
+        context.IsTidyUI = this.importType == "tidy-ui_game-settings";
+        context.IsGM = game.user.isGM;
+        return context;
+      }
 
-        $(html)
-          .find('input[name="import-toggle-modules"]')
-          .prop(
-            "indeterminate",
-            enabledModulesToImport > 0 &&
-              enabledModulesToImport != totalModulesToImport,
-          );
-        $(html)
-          .find('input[name="import-toggle-modules"]')
-          .prop("checked", enabledModulesToImport == totalModulesToImport);
-      });
-    // HToggle All Import Checkbox States
-    $(html)
-      .find('input[name="import-toggle-modules"][type="checkbox"]')
-      .on("change", (event) => {
-        $(html)
-          .find('li[data-module] input[name="import-module"]:not([disabled])')
-          .prop("indeterminate", false);
-        $(html)
-          .find('li[data-module] input[name="import-module"]:not([disabled])')
-          .prop("checked", $(event.target).is(":checked"));
-      });
+      processSettingData(moduleID, type, settings) {
+        return new Promise((resolve) => {
+          for (const [key, setting] of Object.entries(settings)) {
+            if (type == "client") {
+              game.settings.storage
+                .get(type)
+                .setItem(`${moduleID}.${key}`, setting);
+              resolve({ moduleID, key, setting });
+            } else if (type == "world" && game.user.isGM) {
+              SocketInterface.dispatch("modifyDocument", {
+                type: "Setting",
+                action: "update",
+                data: {
+                  key: `${moduleID}.${key}`,
+                  value: setting,
+                },
+              }).then((response) => {
+                resolve({ moduleID, key, setting, response });
+              });
+            } else {
+              resolve(false);
+            }
+          }
+        });
+      }
 
-    // Handle When User Changes Import Client Settings Checkbox State
-    $(html)
-      .find(
-        'li[data-module] input[name="import-settings-client"]:not([disabled])',
-      )
-      .on("change", () => {
-        enabledClientSettingsToImport = $(html).find(
-          'li[data-module] input[name="import-settings-client"]:not([disabled]):checked',
-        ).length;
-
-        $(html)
-          .find('input[name="import-toggle-client-settings"]')
-          .prop(
-            "indeterminate",
-            enabledClientSettingsToImport > 0 &&
-              enabledClientSettingsToImport != totalClientSettingsToImport,
-          );
-        $(html)
-          .find('input[name="import-toggle-client-settings"]')
-          .prop(
-            "checked",
-            enabledClientSettingsToImport == totalClientSettingsToImport,
-          );
-      });
-    // Toggle All Import Checkbox States
-    $(html)
-      .find('input[name="import-toggle-client-settings"][type="checkbox"]')
-      .on("change", (event) => {
-        $(html)
-          .find(
-            'li[data-module] input[name="import-settings-client"]:not([disabled])',
-          )
-          .prop("indeterminate", false);
-        $(html)
-          .find(
-            'li[data-module] input[name="import-settings-client"]:not([disabled])',
-          )
-          .prop("checked", $(event.target).is(":checked"));
-      });
-
-    // Handle When User Changes Import Client Settings Checkbox State
-    $(html)
-      .find(
-        'li[data-module] input[name="import-settings-world"]:not([disabled])',
-      )
-      .on("change", () => {
-        enabledWorldSettingsToImport = $(html).find(
-          'li[data-module] input[name="import-settings-world"]:not([disabled]):checked',
-        ).length;
-
-        $(html)
-          .find('input[name="import-toggle-world-settings"]')
-          .prop(
-            "indeterminate",
-            enabledWorldSettingsToImport > 0 &&
-              enabledWorldSettingsToImport != totalWorldSettingsToImport,
-          );
-        $(html)
-          .find('input[name="import-toggle-world-settings"]')
-          .prop(
-            "checked",
-            enabledWorldSettingsToImport == totalWorldSettingsToImport,
-          );
-      });
-    // Toggle All Import Checkbox States
-    $(html)
-      .find('input[name="import-toggle-world-settings"][type="checkbox"]')
-      .on("change", (event) => {
-        $(html)
-          .find(
-            'li[data-module] input[name="import-settings-world"]:not([disabled])',
-          )
-          .prop("indeterminate", false);
-        $(html)
-          .find(
-            'li[data-module] input[name="import-settings-world"]:not([disabled])',
-          )
-          .prop("checked", $(event.target).is(":checked"));
-      });
-
-    $(html)
-      .find('[data-button="import"]')
-      .on("click", (event) => {
+      static async #submitForm(event, form) {
         event.preventDefault();
-        const keepActiveModules = $("html")
-          .find('.dialog-buttons input[name="keep-enabled-modules"]')
-          .is(":checked");
+        const keepActiveModules = form.querySelector(
+          '.dialog-buttons input[name="keep-enabled-modules"]',
+        ).checked;
         const moduleStates = game.settings.get(
           "core",
           ModuleManagement.SETTING,
         );
-        const $moduleManagment = $("body #module-management");
+        const moduleManagment =
+          foundry.applications.instances.get("module-management").element;
         const settingsCalls = [];
 
         // check if User Wants to keep their currently Enabled modules
         if (!keepActiveModules) {
-          $moduleManagment
-            .find('#module-list li.package input[type="checkbox"]')
-            .prop("checked", false);
-          $moduleManagment
-            .find('#module-list li.package input[type="checkbox"]')
-            .removeClass("active");
+          moduleManagment
+            .querySelectorAll('#module-list li.package input[type="checkbox"]')
+            .forEach((checkbox) => (checkbox.checked = false));
+          moduleManagment
+            .querySelectorAll('#module-list li.package input[type="checkbox"]')
+            .forEach((checkbox) => checkbox.classList.remove("active"));
 
           // Disable All Modules
           for (const property in moduleStates) moduleStates[property] = false;
         }
 
-        $(html)
-          .find('ul li[data-module] input[type="checkbox"]')
-          .prop("disabled", true);
-        $(html)
-          .find("ul li[data-module]")
-          .each((index, module) => {
-            const moduleID = $(module).data("module");
-            const isEnabled = $(module)
-              .find(`input[name="import-module"][type="checkbox"]`)
-              .is(":checked");
-            const importClientSettings =
-              $(module)
-                .find(
-                  `input[name="import-${moduleID}-settings-client"][type="checkbox"]`,
-                )
-                .is(":checked") ?? false;
-            const importWorldSettings =
-              $(module)
-                .find(
-                  `input[name="import-${moduleID}-settings-world"][type="checkbox"]`,
-                )
-                .is(":checked") ?? false;
+        form
+          .querySelectorAll('ul li[data-module] input[type="checkbox"]')
+          .forEach((checkbox) => (checkbox.disabled = true));
+        form.querySelectorAll("ul li[data-module]").forEach((module) => {
+          const moduleID = module.dataset.module;
+          const isEnabled = module.querySelector(
+            `input[name="import-module"][type="checkbox"]`,
+          ).checked;
+          const importClientSettings =
+            module.querySelector(
+              `input[name="import-${moduleID}-settings-client"][type="checkbox"]`,
+            )?.checked ?? false;
+          const importWorldSettings =
+            module.querySelector(
+              `input[name="import-${moduleID}-settings-world"][type="checkbox"]`,
+            )?.checked ?? false;
 
-            // Control Module Active Status
-            moduleStates[moduleID] = isEnabled;
+          // Control Module Active Status
+          moduleStates[moduleID] = isEnabled;
 
-            $moduleManagment
-              .find(
-                `#module-list li.package[data-module-name="${moduleID}"] input[type="checkbox"]`,
-              )
-              .prop("checked", isEnabled);
-            $moduleManagment
-              .find(
-                `#module-list li.package[data-module-name="${moduleID}"] input[type="checkbox"]`,
-              )
-              .toggleClass("active", isEnabled);
+          moduleManagment
+            .querySelectorAll(
+              `#module-list li.package[data-module-name="${moduleID}"] input[type="checkbox"]`,
+            )
+            .forEach((checkbox) => (checkbox.checked = isEnabled));
+          moduleManagment
+            .querySelectorAll(
+              `#module-list li.package[data-module-name="${moduleID}"] input[type="checkbox"]`,
+            )
+            .forEach((checkbox) => checkbox.classList.toggle("active", isEnabled));
 
-            if (isEnabled) {
-              // Import World Settings
-              if (
-                importWorldSettings &&
-                (this.moduleData[moduleID]?.settings?.world ?? false)
-              ) {
-                settingsCalls.push(
-                  this.processSettingData(
-                    moduleID,
-                    "world",
-                    this.moduleData[moduleID]?.settings?.world,
-                  ),
-                );
-              }
-
-              // Import Client Settings
-              if (
-                importClientSettings &&
-                (this.moduleData[moduleID]?.settings?.client ?? false)
-              ) {
-                settingsCalls.push(
-                  this.processSettingData(
-                    moduleID,
-                    "client",
-                    this.moduleData[moduleID]?.settings?.client,
-                  ),
-                );
-              }
+          if (isEnabled) {
+            // Import World Settings
+            if (
+              importWorldSettings &&
+              (this.moduleData[moduleID]?.settings?.world ?? false)
+            ) {
+              settingsCalls.push(
+                this.processSettingData(
+                  moduleID,
+                  "world",
+                  this.moduleData[moduleID]?.settings?.world,
+                ),
+              );
             }
-          });
+
+            // Import Client Settings
+            if (
+              importClientSettings &&
+              (this.moduleData[moduleID]?.settings?.client ?? false)
+            ) {
+              settingsCalls.push(
+                this.processSettingData(
+                  moduleID,
+                  "client",
+                  this.moduleData[moduleID]?.settings?.client,
+                ),
+              );
+            }
+          }
+        });
 
         Promise.allSettled(settingsCalls).then(() => {
           if (!MODULE.setting("storePreviousOnPreset"))
@@ -324,6 +194,156 @@ export class ImportDialog extends FormApplication {
               SettingsConfig.reloadConfirm({ world: true });
             });
         });
-      });
-  }
-}
+      }
+
+      _onChangeForm(formConfig, event) {
+        super._onChangeForm(formConfig, event);
+        switch (event.target.name) {
+          case "import-module": {
+            this.enabledModulesToImport = this.form.querySelectorAll(
+              'li[data-module] input[name="import-module"]:not([disabled]):checked',
+            ).length;
+
+            this.form.querySelector(
+              'input[name="import-toggle-modules"]',
+            ).indeterminate =
+              this.enabledModulesToImport > 0 &&
+              this.enabledModulesToImport != this.totalModulesToImport;
+            this.form.querySelector(
+              'input[name="import-toggle-modules"]',
+            ).checked =
+              this.enabledModulesToImport == this.totalModulesToImport;
+            break;
+          }
+          case "import-toggle-modules": {
+            this.form
+              .querySelectorAll(
+                'li[data-module] input[name="import-module"]:not([disabled])',
+              )
+              .forEach((el) => {
+                el.indeterminate = false;
+              });
+            this.form
+              .querySelectorAll(
+                'li[data-module] input[name="import-module"]:not([disabled])',
+              )
+              .forEach((el) => {
+                el.checked = this.form.querySelector(
+                  'input[name="import-toggle-modules"]',
+                ).checked;
+              });
+            break;
+          }
+          case "import-settings-client": {
+            this.enabledClientSettingsToImport = this.form.querySelectorAll(
+              'li[data-module] input[name="import-settings-client"]:not([disabled]):checked',
+            ).length;
+
+            this.form.querySelector(
+              'input[name="import-toggle-client-settings"]',
+            ).indeterminate =
+              this.enabledClientSettingsToImport > 0 &&
+              this.enabledClientSettingsToImport !=
+                this.totalClientSettingsToImport;
+            this.form.querySelector(
+              'input[name="import-toggle-client-settings"]',
+            ).checked =
+              this.enabledClientSettingsToImport ==
+              this.totalClientSettingsToImport;
+            break;
+          }
+          case "import-toggle-client-settings": {
+            this.form
+              .querySelectorAll(
+                'li[data-module] input[name="import-settings-client"]:not([disabled])',
+              )
+              .forEach((el) => {
+                el.indeterminate = false;
+              });
+            this.form
+              .querySelectorAll(
+                'li[data-module] input[name="import-settings-client"]:not([disabled])',
+              )
+              .forEach((el) => {
+                el.checked = this.form.querySelector(
+                  'input[name="import-toggle-client-settings"]',
+                ).checked;
+              });
+            break;
+          }
+          case "import-settings-world": {
+            this.enabledWorldSettingsToImport = this.form.querySelectorAll(
+              'li[data-module] input[name="import-settings-world"]:not([disabled]):checked',
+            ).length;
+
+            this.form.querySelector(
+              'input[name="import-toggle-world-settings"]',
+            ).indeterminate =
+              this.enabledWorldSettingsToImport > 0 &&
+              this.enabledWorldSettingsToImport !=
+                this.totalWorldSettingsToImport;
+            this.form.querySelector(
+              'input[name="import-toggle-world-settings"]',
+            ).checked =
+              this.enabledWorldSettingsToImport ==
+              this.totalWorldSettingsToImport;
+            break;
+          }
+          case "import-toggle-world-settings": {
+            this.form
+              .querySelectorAll(
+                'li[data-module] input[name="import-settings-world"]:not([disabled])',
+              )
+              .forEach((el) => {
+                el.indeterminate = false;
+              });
+            this.form
+              .querySelectorAll(
+                'li[data-module] input[name="import-settings-world"]:not([disabled])',
+              )
+              .forEach((el) => {
+                el.checked = this.form.querySelector(
+                  'input[name="import-toggle-world-settings"]',
+                ).checked;
+              });
+            break;
+          }
+        }
+      }
+
+      async _onFirstRender() {
+        this.totalModulesToImport = this.form.querySelectorAll(
+          'li[data-module] input[name="import-module"]:not([disabled])',
+        ).length;
+        this.enabledModulesToImport = this.form.querySelectorAll(
+          'li[data-module] input[name="import-module"]:not([disabled]):checked',
+        ).length;
+        this.totalClientSettingsToImport = this.form.querySelectorAll(
+          'li[data-module] input[name="import-settings-client"]:not([disabled])',
+        ).length;
+        this.enabledClientSettingsToImport = this.form.querySelectorAll(
+          'li[data-module] input[name="import-settings-client"]:not([disabled]):checked',
+        ).length;
+        this.totalWorldSettingsToImport = this.form.querySelectorAll(
+          'li[data-module] input[name="import-settings-world"]:not([disabled])',
+        ).length;
+        this.enabledWorldSettingsToImport = this.form.querySelectorAll(
+          'li[data-module] input[name="import-settings-world"]:not([disabled]):checked',
+        ).length;
+        // Set Import Module Checkbox Initial State
+        this.form
+          .querySelectorAll('input[name="import-toggle-modules"]')
+          .forEach((checkbox) => {
+            checkbox.indeterminate =
+              this.enabledModulesToImport > 0 &&
+              this.enabledModulesToImport != this.totalModulesToImport;
+          });
+        this.form
+          .querySelectorAll('input[name="import-toggle-modules"]')
+          .forEach((checkbox) => {
+            checkbox.checked =
+              this.enabledModulesToImport == this.totalModulesToImport;
+          });
+      }
+    }),
+);

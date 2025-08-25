@@ -1,94 +1,95 @@
-<form action="#" style="display: none;"></form>
-<div class="dialog-content">
-  {{#if IsTidyUI}}
-    <div class="notification warning">
-      <strong>{{localize
-          "module-credits.dialog.import.tidyUI.title"
-        }}</strong><br />
-      <p>{{localize "module-credits.dialog.import.tidyUI.message"}}</p>
-    </div>
-  {{/if}}
-  <ul id="{{DIALOG.ID}}-import-header">
-    <li>
-      <input name="import-toggle-modules" type="checkbox" />
-      <div>{{localize "module-credits.dialog.import.table.moduleTitle"}}</div>
-      {{#if IsTidyUI}}{{else}}
-        <label for="import-toggle-client-settings">
-          {{localize "module-credits.dialog.import.table.client"}}
-          <input
-            id="import-toggle-client-settings"
-            name="import-toggle-client-settings"
-            type="checkbox"
-          />
-        </label>
-        <label for="import-toggle-world-settings">
-          {{localize "module-credits.dialog.import.table.world"}}
-          <input
-            id="import-toggle-world-settings"
-            name="import-toggle-world-settings"
-            type="checkbox"
-          />
-        </label>
-      {{/if}}
-    </li>
-  </ul>
-  <ul
-    id="{{DIALOG.ID}}-import-packages"
+<section>
+  <div class="dialog-content">
     {{#if IsTidyUI}}
-      style="max-height: 420px;"
+      <div class="notification warning">
+        <strong>{{localize
+            "module-credits.dialog.import.tidyUI.title"
+          }}</strong><br />
+        <p>{{localize "module-credits.dialog.import.tidyUI.message"}}</p>
+      </div>
     {{/if}}
-  >
-    {{#each modules}}
-      <li data-module="{{@key}}">
-        <input
-          id="import-{{@key}}-module"
-          name="import-module"
-          type="checkbox"
-          {{#if isInstalled}}
-            checked
-          {{else}}
-            disabled
-          {{/if}}
-        />
-        <label for="import-{{@key}}-module">
-          {{title}}
-          {{#if isInstalled}}{{else}}<span class="tag unknown">{{localize
-                "module-credits.dialog.import.notInstalled"
-              }}</span>{{/if}}
-        </label>
-        {{#if ../IsTidyUI}}{{else}}
-          <label for="import-settings-client">
+    <ul id="{{DIALOG.ID}}-import-header">
+      <li>
+        <input name="import-toggle-modules" type="checkbox" />
+        <div>{{localize "module-credits.dialog.import.table.moduleTitle"}}</div>
+        {{#if IsTidyUI}}{{else}}
+          <label for="import-toggle-client-settings">
+            {{localize "module-credits.dialog.import.table.client"}}
             <input
-              name="import-settings-client"
+              id="import-toggle-client-settings"
+              name="import-toggle-client-settings"
               type="checkbox"
-              {{#if hasClientSettings}}
-              {{else}}
-                disabled
-              {{/if}}
             />
           </label>
-          <label for="import-settings-world">
+          <label for="import-toggle-world-settings">
+            {{localize "module-credits.dialog.import.table.world"}}
             <input
-              name="import-settings-world"
+              id="import-toggle-world-settings"
+              name="import-toggle-world-settings"
               type="checkbox"
-              {{#if hasWorldSettings}}
-              {{else}}
-                disabled
-              {{/if}}
             />
           </label>
         {{/if}}
       </li>
-    {{/each}}
-  </ul>
-</div>
-<div class="dialog-buttons" style="flex: 0 1">
-  <Label class="keep-enabled" data-button="keep-enabled">
-    <input name="keep-enabled-modules" type="checkbox" />
-    {{localize "module-credits.dialog.import.buttons.keep"}}
-  </Label>
-  <button class="dialog-button import" data-button="import">
-    <i class="fas fa-upload"></i>
-    {{localize "module-credits.dialog.import.buttons.import"}}
-  </button>
-</div>
+    </ul>
+    <ul
+      id="{{DIALOG.ID}}-import-packages"
+      {{#if IsTidyUI}}
+        class="tidy-ui"
+      {{/if}}
+    >
+      {{#each modules}}
+        <li data-module="{{@key}}">
+          <input
+            id="import-{{@key}}-module"
+            name="import-module"
+            type="checkbox"
+            {{#if isInstalled}}
+              checked
+            {{else}}
+              disabled
+            {{/if}}
+          />
+          <label for="import-{{@key}}-module">
+            {{title}}
+            {{#if isInstalled}}{{else}}<span class="tag unknown">{{localize
+                  "module-credits.dialog.import.notInstalled"
+                }}</span>{{/if}}
+          </label>
+          {{#if ../IsTidyUI}}{{else}}
+            <label for="import-settings-client">
+              <input
+                name="import-settings-client"
+                type="checkbox"
+                {{#if hasClientSettings}}
+                {{else}}
+                  disabled
+                {{/if}}
+              />
+            </label>
+            <label for="import-settings-world">
+              <input
+                name="import-settings-world"
+                type="checkbox"
+                {{#if hasWorldSettings}}
+                {{else}}
+                  disabled
+                {{/if}}
+              />
+            </label>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+  <div class="dialog-buttons">
+    <Label class="keep-enabled" data-button="keep-enabled">
+      <input name="keep-enabled-modules" type="checkbox" />
+      {{localize "module-credits.dialog.import.buttons.keep"}}
+    </Label>
+    <button class="dialog-button import" data-action="submit">
+      <i class="fas fa-upload"></i>
+      {{localize "module-credits.dialog.import.buttons.import"}}
+    </button>
+  </div>
+</section>
