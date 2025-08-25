@@ -2073,9 +2073,7 @@ export class MMP {
 
     if (readme || changelog || attributions || license) {
       const systemLinksContainer = elem.querySelector(".info div.system-links");
-      const systemLinks = Array.from(
-        systemLinksContainer.querySelectorAll("a"),
-      );
+      let systemLinks = Array.from(systemLinksContainer.querySelectorAll("a"));
       const systemLinksText = systemLinks.map((link) =>
         link.textContent.toLowerCase(),
       );
@@ -2085,11 +2083,14 @@ export class MMP {
         ((game.system.readme || "").match(APIs.github) ?? false) ||
         ((game.system.readme || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.some((text) => text.includes("readme")))
-          systemLinks
-            .find((link) => link.textContent.toLowerCase().includes("readme"))
-            .remove();
-        const readmeButton = document.createElement("a");
+        if (systemLinksText.some((text) => text.includes("readme"))) {
+          const link = systemLinks.find((link) =>
+            link.textContent.toLowerCase().includes("readme"),
+          );
+          link.remove();
+          systemLinks = systemLinks.filter((l) => l !== link);
+        }
+        const readmeButton = document.createElement("button");
         readmeButton.dataset.action = "readme";
         readmeButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.readme",
@@ -2115,13 +2116,14 @@ export class MMP {
         ((game.system.changelog || "").match(APIs.github) ?? false) ||
         ((game.system.changelog || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.some((text) => text.includes("changelog")))
-          systemLinks
-            .find((link) =>
-              link.textContent.toLowerCase().includes("changelog"),
-            )
-            .remove();
-        const changelogButton = document.createElement("a");
+        if (systemLinksText.some((text) => text.includes("changelog"))) {
+          const link = systemLinks.find((link) =>
+            link.textContent.toLowerCase().includes("changelog"),
+          );
+          link.remove();
+          systemLinks = systemLinks.filter((l) => l !== link);
+        }
+        const changelogButton = document.createElement("button");
         changelogButton.dataset.action = "changelog";
         changelogButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.changelog",
@@ -2147,13 +2149,14 @@ export class MMP {
         ((game.system.flags.attributions || "").match(APIs.github) ?? false) ||
         ((game.system.flags.attributions || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.some((text) => text.includes("attributions")))
-          systemLinks
-            .find((link) =>
-              link.textContent.toLowerCase().includes("attributions"),
-            )
-            .remove();
-        const attributionsButton = document.createElement("a");
+        if (systemLinksText.some((text) => text.includes("attributions"))) {
+          const link = systemLinks.find((link) =>
+            link.textContent.toLowerCase().includes("attributions"),
+          );
+          link.remove();
+          systemLinks = systemLinks.filter((l) => l !== link);
+        }
+        const attributionsButton = document.createElement("button");
         attributionsButton.dataset.action = "attributions";
         attributionsButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.attributions",
@@ -2179,11 +2182,14 @@ export class MMP {
         ((game.system.flags.license || "").match(APIs.github) ?? false) ||
         ((game.system.flags.license || "").match(APIs.rawGithub) ?? false)
       ) {
-        if (systemLinksText.some((text) => text.includes("license")))
-          systemLinks
-            .find((link) => link.textContent.toLowerCase().includes("license"))
-            .remove();
-        const licenseButton = document.createElement("a");
+        if (systemLinksText.some((text) => text.includes("license"))) {
+          const link = systemLinks.find((link) =>
+            link.textContent.toLowerCase().includes("license"),
+          );
+          link.remove();
+          systemLinks = systemLinks.filter((l) => l !== link);
+        }
+        const licenseButton = document.createElement("button");
         licenseButton.dataset.action = "license";
         licenseButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.license",
@@ -2203,6 +2209,12 @@ export class MMP {
           }).render(true);
         });
       }
+      systemLinks.forEach((link) => {
+        const button = document.createElement("button");
+        button.append(link);
+        button.addEventListener("click", () => link.click());
+        systemLinksContainer.append(button);
+      });
     }
 
     // Hide Active Modules

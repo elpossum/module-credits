@@ -41,7 +41,7 @@
     flex-wrap: wrap;
     overflow: hidden;
 
-    a {
+    button {
       flex: 1;
       background: var(--color-cool-5-50);
       border: 1px solid var(--color-light-5);
