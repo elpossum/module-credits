@@ -43,14 +43,6 @@
         "name": "Donner automatiquement un préfixe aux modules",
         "hint": "Cela donnera un préfixe aux titre des modules avec tous les autres titres requis du module."
       },
-      "dependencyDialogType": {
-        "name": "Type de dialogue pour les dépendances de modules étendues",
-        "choices": {
-          "prompt": "Invitation",
-          "confirm": "Confirmation"
-        },
-        "hint": "Cela vous permet de choisir le type de dialogue qui sera utilisé lorsque vous activez/désactivez les modules utilisant Dépendances de modules étendues."
-      },
       "storePreviousOnPreset": {
         "name": "Conserver le retour en arrière lorsque vous chargez un réglage",
         "hint": "En cas d'activation, un retour à l'état initial sera créé lorsque vous activez un réglage ou lorsque vous importez un réglage"
@@ -85,14 +77,6 @@
       "moduleManagement": {
         "lockedModules": "Modules verrouillés",
         "rollback": "Revenir à la liste de modules précédente",
-        "dependencies": {
-          "requires": "Requiert",
-          "optional": "Optionnel",
-          "headerTextDisable": "{title} possède {number} dépendances actives qui pourraient ne plus être requises. Elles sont listées en dessous.",
-          "actionTextEnable": "Activer les modules sélectionnés ?",
-          "actionTextDisable": "Désactiver les modules sélectionnés ?",
-          "headerTextEnable": "{title} possède {number} dépendances inactives qui pourraient ne plus être requises. Elles sont listées en dessous."
-        },
         "buttons": {
           "deactivateModules": "Désactiver tous les modules déverrouillés",
           "spreadsheet": "Spreadsheet Conflits globaux",
