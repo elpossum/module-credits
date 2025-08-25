@@ -43,13 +43,12 @@
 
     button {
       flex: 1;
-      background: var(--color-cool-5-50);
-      border: 1px solid var(--color-light-5);
+      background: var(--button-background-color);
+      border: 1px solid var(--button-border-color);
       text-transform: uppercase;
       font-size: var(--font-size-12);
       padding: 0.25rem;
-      height: 2rem;
-      align-content: center;
+      height: var(--button-size);
       text-align: center;
 
       animation:
@@ -77,9 +76,9 @@
       border-right-style: var(--is-inline-end, solid);
 
       &:hover {
-        background-color: var(--color-warm-2);
-        color: var(--color-light-1);
-        border-color: var(--color-light-3);
+        background-color: var(--button-hover-background-color);
+        color: var(--button-hover-text-color);
+        border-color: var(--button-hover-border-color);
       }
 
       i {

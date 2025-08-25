@@ -37,16 +37,17 @@
   }
 
   search.flexrow {
+    gap: 0;
+
     a.filter {
       display: none;
     }
 
     button {
-      border: 1px solid var(--color-border-light-primary);
+      border: 1px solid var(--color-border);
       border-radius: 0px;
       border-right-width: 0px;
       flex: 0 0 32px;
-      height: 30px;
       margin: 0px;
     }
 
@@ -60,14 +61,14 @@
       border-bottom-right-radius: 3px;
       border-top-right-radius: 3px;
       border-right-width: 1px;
+      --button-size: var(--input-height);
     }
 
     input,
     select {
-      border: 1px solid var(--color-border-light-primary);
+      border: 1px solid var(--color-border);
       border-radius: 0px;
       border-right-width: 0px;
-      height: 30px;
     }
 
     select {
@@ -121,7 +122,7 @@
           align-items: center;
           font-size: 0rem;
           background: rgba(0, 0, 0, 0.1);
-          border: 1px solid var(--color-border-light-primary);
+          border: 1px solid var(--color-border);
           color: var(--button-text-color);
           margin: 0px;
           margin-bottom: -5px;
