@@ -2071,13 +2071,14 @@ export class MMP {
         : ""
     }v${game.system.version}`;
 
-    if (readme || changelog || attributions || license) {
-      const systemLinksContainer = elem.querySelector(".info div.system-links");
-      let systemLinks = Array.from(systemLinksContainer.querySelectorAll("a"));
-      const systemLinksText = systemLinks.map((link) =>
-        link.textContent.toLowerCase(),
-      );
+    const systemLinksContainer = elem.querySelector(".info div.system-links");
+    let systemLinks = Array.from(systemLinksContainer.querySelectorAll("a"));
+    const systemLinksText = systemLinks.map((link) =>
+      link.textContent.toLowerCase(),
+    );
+    const done = systemLinksContainer.querySelectorAll(`.${MODULE.ID}`).length > 0;
 
+    if (!done && (readme || changelog || attributions || license)) {
       if (
         readme ||
         ((game.system.readme || "").match(APIs.github) ?? false) ||
@@ -2091,6 +2092,7 @@ export class MMP {
           systemLinks = systemLinks.filter((l) => l !== link);
         }
         const readmeButton = document.createElement("button");
+        readmeButton.classList.add(MODULE.ID);
         readmeButton.dataset.action = "readme";
         readmeButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.readme",
@@ -2124,6 +2126,7 @@ export class MMP {
           systemLinks = systemLinks.filter((l) => l !== link);
         }
         const changelogButton = document.createElement("button");
+        changelogButton.classList.add(MODULE.ID);
         changelogButton.dataset.action = "changelog";
         changelogButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.changelog",
@@ -2157,6 +2160,7 @@ export class MMP {
           systemLinks = systemLinks.filter((l) => l !== link);
         }
         const attributionsButton = document.createElement("button");
+        attributionsButton.classList.add(MODULE.ID);
         attributionsButton.dataset.action = "attributions";
         attributionsButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.attributions",
@@ -2190,6 +2194,7 @@ export class MMP {
           systemLinks = systemLinks.filter((l) => l !== link);
         }
         const licenseButton = document.createElement("button");
+        licenseButton.classList.add(MODULE.ID);
         licenseButton.dataset.action = "license";
         licenseButton.dataset.tooltip = MODULE.localize(
           "dialog.moduleManagement.tags.license",
@@ -2211,6 +2216,7 @@ export class MMP {
       }
       systemLinks.forEach((link) => {
         const button = document.createElement("button");
+        button.classList.add(MODULE.ID);
         button.append(link);
         button.addEventListener("click", () => link.click());
         systemLinksContainer.append(button);
