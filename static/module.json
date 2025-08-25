@@ -2,7 +2,7 @@
   "id": "module-credits",
   "title": "Module Management+",
   "description": "Is packed with features and design improvements designed to make managing large module list easy. MM+ provides more detailed information about modules at a glance and allows you to read packages changelogs/readmes directly in foundry meant to help you find answers quickly. Some of the notable features of Module Management+ is the Addition of new tags such as readme, changelog, issues and authors. A cleaner easier list view of the modules with stripped rows and more spacing to make the viewing experiance easier on the eyes. The ability to see conflicts and known issues with your installed modules.",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "compatibility": {
     "minimum": 13,
     "verified": 13
@@ -20,6 +20,10 @@
         "ko-fi": "Mouse0270",
         "reddit": "u/Mouse0270"
       }
+    },
+    {
+      "name": "elpossum",
+      "url": "https://github.com/elpossum/module-credits"
     }
   ],
   "library": false,
@@ -28,12 +32,6 @@
     "systems": [],
     "requires": [],
     "recommends": [
-      {
-        "id": "lib-wrapper",
-        "type": "module",
-        "reason": "Provides a compatibility layer for checking if other Modules are overriding similar functionality.",
-        "compatibility": {}
-      },
       {
         "id": "socketlib",
         "type": "module",
@@ -103,18 +101,18 @@
   "url": "This is auto replaced",
   "manifest": "This is auto replaced",
   "download": "This is auto replaced",
-  "readme": "https://github.com/mouse0270/module-credits/blob/master/README.md",
-  "changelog": "https://github.com/mouse0270/module-credits/blob/master/CHANGELOG.md",
-  "license": "https://github.com/mouse0270/module-credits/blob/master/LICENSE",
-  "bugs": "https://github.com/mouse0270/module-credits/issues",
+  "readme": "https://github.com/elpossum/module-credits/blob/master/README.md",
+  "changelog": "https://github.com/elpossum/module-credits/blob/master/CHANGELOG.md",
+  "license": "https://github.com/elpossum/module-credits/blob/master/LICENSE",
+  "bugs": "https://github.com/elpossum/module-credits/issues",
   "media": [
     {
       "type": "icon",
-      "url": "https://raw.githubusercontent.com/mouse0270/module-credits/master/assets/mm%2B.png"
+      "url": "https://raw.githubusercontent.com/elpossum/module-credits/master/assets/mm%2B.png"
     }
   ],
   "flags": {
     "allowBugReporter": true,
-    "attributions": "https://github.com/mouse0270/module-credits/blob/master/ATTRIBUTIONS.md"
+    "attributions": "https://github.com/elpossum/module-credits/blob/master/ATTRIBUTIONS.md"
   }
 }
