@@ -76,8 +76,8 @@ export class MMP {
       return await Dialog.confirm({
         title: MODULE.localize("title"),
         content: `<p style="margin-top:0px;">${MODULE.localize("dialog.clientSettings.syncSetting.askPermission")}</p> 
-					<p>${game.i18n.localize(game.settings.settings.get(moduleId + "." + settingName).name)}<br/>
-					${game.i18n.localize(game.settings.settings.get(moduleId + "." + settingName).hint)}</p>`,
+          <p>${game.i18n.localize(game.settings.settings.get(moduleId + "." + settingName).name)}<br/>
+          ${game.i18n.localize(game.settings.settings.get(moduleId + "." + settingName).hint)}</p>`,
         yes: () => {
           return setSetting(moduleId, settingName, settingValue);
         },
@@ -507,8 +507,8 @@ export class MMP {
       elem.querySelector("search.flexrow").insertAdjacentHTML(
         "afterbegin",
         `<button type="button" class="" data-action="presets" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.managePresets")}">
-				<i class="fa-solid fa-list-check"></i>
-			</button>`,
+          <i class="fa-solid fa-list-check"></i>
+        </button>`,
       );
       elem
         .querySelector('search.flexrow button[data-action="presets"]')
@@ -520,8 +520,8 @@ export class MMP {
       expandButton.insertAdjacentHTML(
         "beforebegin",
         `<button type="button" class="" data-action="export" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.exportModules")}">
-				<i class="fa-solid fa-download"></i>
-			</button>`,
+          <i class="fa-solid fa-download"></i>
+        </button>`,
       );
       elem
         .querySelector('search.flexrow button[data-action="export"]')
@@ -536,8 +536,8 @@ export class MMP {
       expandButton.insertAdjacentHTML(
         "beforebegin",
         `<button type="button" class="" data-action="import" data-tooltip="${MODULE.localize("dialog.moduleManagement.tooltips.importModules")}">
-				<i class="fa-solid fa-upload"></i>
-			</button>`,
+          <i class="fa-solid fa-upload"></i>
+        </button>`,
       );
       elem
         .querySelector('search.flexrow button[data-action="import"]')
@@ -897,7 +897,7 @@ export class MMP {
                 id: `${MODULE.ID}-rename-module`,
                 title: MODULE.TITLE,
                 content: `<p style="margin-top: 0px;">${MODULE.localize("dialog.moduleManagement.contextMenu.renameModule")}</p>
-							<input type="text" name="${MODULE.ID}-rename-module-title" value="${packageElem.querySelector("label.package-title").textContent.trim()}"/>`,
+                  <input type="text" name="${MODULE.ID}-rename-module-title" value="${packageElem.querySelector("label.package-title").textContent.trim()}"/>`,
                 yes: (elemDialog) => {
                   if (
                     elemDialog[0].querySelector(
@@ -1051,19 +1051,19 @@ export class MMP {
                   .insertAdjacentHTML(
                     "afterend",
                     `<div class="form-group-stacked">
-							<div class="form-group-stacked">
-								<label>${MODULE.localize("dialog.bugReporter.selectLabel")}</label>
-								<select name="${MODULE.ID}.formFields.selectLabel">
-									<optgroup label="${MODULE.localize("dialog.bugReporter.optGroup.core")}">
-										<option value="core" data-type="core">${game.i18n.localize("Foundry Virtual Tabletop")}</option>
-									</optgroup>
-									<optgroup label="${MODULE.localize("dialog.bugReporter.optGroup.system")}">
-										<option value="${game.system.id}" data-type="system">${game.system.title}</option>
-									</optgroup>
-									<optgroup label="${MODULE.localize("dialog.bugReporter.optGroup.modules")}"></optgroup>
-								</select>
-							</div>
-						</div>`,
+                      <div class="form-group-stacked">
+                        <label>${MODULE.localize("dialog.bugReporter.selectLabel")}</label>
+                        <select name="${MODULE.ID}.formFields.selectLabel">
+                          <optgroup label="${MODULE.localize("dialog.bugReporter.optGroup.core")}">
+                            <option value="core" data-type="core">${game.i18n.localize("Foundry Virtual Tabletop")}</option>
+                          </optgroup>
+                          <optgroup label="${MODULE.localize("dialog.bugReporter.optGroup.system")}">
+                            <option value="${game.system.id}" data-type="system">${game.system.title}</option>
+                          </optgroup>
+                          <optgroup label="${MODULE.localize("dialog.bugReporter.optGroup.modules")}"></optgroup>
+                        </select>
+                      </div>
+                    </div>`,
                   );
 
                 // Add Modules to Dropdown
@@ -1285,8 +1285,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag settings flexrow" data-tooltip="${game.i18n.localize("SETTINGS.TabModule")}" aria-describedby="tooltip">
-					<i class="fa-solid fa-gear"></i>
-				</span>`,
+            <i class="fa-solid fa-gear"></i>
+          </span>`,
         );
       }
       // Add Authors Tag
@@ -1294,8 +1294,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag authors flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.authors")}" aria-describedby="tooltip">
-					<i class="fa-solid ${moduleData?.authors.size == 1 ? "fa-user" : "fa-users"}"></i>
-				</span>`,
+            <i class="fa-solid ${moduleData?.authors.size == 1 ? "fa-user" : "fa-users"}"></i>
+          </span>`,
         );
         let outputList = "";
         moduleData?.authors.forEach((author) => {
@@ -1364,8 +1364,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag readme flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.readme")}" aria-describedby="tooltip">
-					<i class="fa-solid fa-circle-info"></i>
-				</span>`,
+            <i class="fa-solid fa-circle-info"></i>
+          </span>`,
         );
         overviewContainer
           .querySelector(".tag.readme")
@@ -1395,8 +1395,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag changelog flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.changelog")}" aria-describedby="tooltip">
-					<i class="fa-solid fa-list"></i>
-				</span>`,
+            <i class="fa-solid fa-list"></i>
+          </span>`,
         );
         overviewContainer
           .querySelector(".tag.changelog")
@@ -1426,8 +1426,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag attributions flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.attributions")}" aria-describedby="tooltip">
-					<i class="fa-brands fa-creative-commons-by"></i>
-				</span>`,
+            <i class="fa-brands fa-creative-commons-by"></i>
+          </span>`,
         );
         overviewContainer
           .querySelector(".tag.attributions")
@@ -1447,8 +1447,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<a href="${MMP.getModuleProperty(moduleData.id, "url")}" class="tag website flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.url")}" aria-describedby="tooltip" target="_blank">
-					<i class="fa-solid fa-link"></i>
-				</a>`,
+            <i class="fa-solid fa-link"></i>
+          </a>`,
         );
       }
       // Add Issues Link | Support for 🐛 Bug Reporter Support
@@ -1456,15 +1456,15 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag issues bug-reporter flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.bugReporter")}" aria-describedby="tooltip" target="_blank">
-					<i class="fa-solid fa-bug"></i>
-				</span>`,
+            <i class="fa-solid fa-bug"></i>
+          </span>`,
         );
       } else if (MMP.getModuleProperty(moduleData.id, "bugs") ?? false) {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<a href="${MMP.getModuleProperty(moduleData.id, "bugs")}" class="tag issues flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.issues")}" aria-describedby="tooltip" target="_blank">
-					<i class="fa-brands fa-github"></i>
-				</a>`,
+            <i class="fa-brands fa-github"></i>
+          </a>`,
         );
       }
       // Add Socket Tag
@@ -1472,8 +1472,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag socket flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.socket")}" aria-describedby="tooltip" >
-					<i class="fa-solid fa-plug"></i>
-				</span>`,
+            <i class="fa-solid fa-plug"></i>
+          </span>`,
         );
       }
       // Add Library Tag
@@ -1481,8 +1481,8 @@ export class MMP {
         tagContainer.insertAdjacentHTML(
           "beforeend",
           `<span class="tag library flexrow" data-tooltip="${MODULE.localize("dialog.moduleManagement.tags.library")}" aria-describedby="tooltip">
-					<i class="fa-solid fa-book"></i>
-				</span>`,
+            <i class="fa-solid fa-book"></i>
+          </span>`,
         );
       }
 
@@ -1490,8 +1490,8 @@ export class MMP {
       overviewContainer.insertAdjacentHTML(
         "beforeend",
         `<button class="tag expand flexrow" data-tooltip="${game.i18n.localize("Expand")}" aria-describedby="tooltip">
-				<i class="fa-solid fa-circle-caret-up"></i>
-			</button>`,
+          <i class="fa-solid fa-circle-caret-up"></i>
+        </button>`,
       );
       elemPackage.querySelector(".package-description").classList.add("hidden");
       overviewContainer
@@ -1620,8 +1620,8 @@ export class MMP {
           .insertAdjacentHTML(
             "afterend",
             `<button type="button" name="global-conflicts-spreadsheet">
-					<i class="fa-regular fa-table"></i> ${MODULE.localize("dialog.moduleManagement.buttons.spreadsheet")}
-				</button>`,
+              <i class="fa-regular fa-table"></i> ${MODULE.localize("dialog.moduleManagement.buttons.spreadsheet")}
+            </button>`,
           );
         elem
           .querySelector('footer button[name="global-conflicts-spreadsheet"]')
@@ -1672,9 +1672,9 @@ export class MMP {
       elem.querySelector(
         'footer button[data-action="deactivateAll"]',
       ).innerHTML = `<span class="fa-stack">
-				<i class="fa-regular fa-square-check fa-stack-1x"></i>
-				<i class="fa-sharp fa-solid fa-slash fa-stack-1x"></i>
-			</span>${MODULE.localize("dialog.moduleManagement.buttons.deactivateModules")}`;
+          <i class="fa-regular fa-square-check fa-stack-1x"></i>
+          <i class="fa-sharp fa-solid fa-slash fa-stack-1x"></i>
+        </span>${MODULE.localize("dialog.moduleManagement.buttons.deactivateModules")}`;
       elem.querySelector(
         'footer button[data-action="deactivateAll"]',
       ).dataset.tooltip = MODULE.localize(
@@ -1719,8 +1719,8 @@ export class MMP {
         elem.querySelector('footer button[type="submit"]').insertAdjacentHTML(
           "beforebegin",
           `<button type="button" name="rollback" data-tooltip="${MODULE.localize("dialog.moduleManagement.rollback")}">
-					<i class="fa-regular fa-rotate-left"></i>
-				</button>`,
+            <i class="fa-regular fa-rotate-left"></i>
+          </button>`,
         );
 
         elem
@@ -1733,18 +1733,18 @@ export class MMP {
               id: `${MODULE.ID}-rollback-modules`,
               title: MODULE.TITLE,
               content: `<p style="margin-top: 0px;">${MODULE.localize("dialog.moduleManagement.rollback")}</p>
-						<textarea readonly rows="15" style="margin-bottom: 0.5rem;">### ${MODULE.localize("dialog.generic.activeModules")}\n${Object.entries(
-              rollBackModules,
-            )
-              .filter(([key, value]) => {
-                return (
-                  (game.modules.get(key)?.title ?? "") != "" && value != false
-                );
-              })
-              .map((module) => {
-                return game.modules.get(module[0])?.title;
-              })
-              .join("\n")}</textarea>`,
+              <textarea readonly rows="15" style="margin-bottom: 0.5rem;">### ${MODULE.localize("dialog.generic.activeModules")}\n${Object.entries(
+                rollBackModules,
+              )
+                .filter(([key, value]) => {
+                  return (
+                    (game.modules.get(key)?.title ?? "") != "" && value != false
+                  );
+                })
+                .map((module) => {
+                  return game.modules.get(module[0])?.title;
+                })
+                .join("\n")}</textarea>`,
               yes: () => {
                 // Update Modules and Reload Game
                 MODULE.setting("storedRollback", {}).then(() => {
@@ -1999,8 +1999,8 @@ export class MMP {
       elem.querySelector(".documentation a:last-child").insertAdjacentHTML(
         "afterend",
         `<button data-action="changelogs">
-					<i class="fa-solid fa-list"></i> Changelogs
-				</button>`,
+          <i class="fa-solid fa-list"></i> Changelogs
+        </button>`,
       );
 
       elem
@@ -2076,7 +2076,8 @@ export class MMP {
     const systemLinksText = systemLinks.map((link) =>
       link.textContent.toLowerCase(),
     );
-    const done = systemLinksContainer.querySelectorAll(`.${MODULE.ID}`).length > 0;
+    const done =
+      systemLinksContainer.querySelectorAll(`.${MODULE.ID}`).length > 0;
 
     if (!done && (readme || changelog || attributions || license)) {
       if (
