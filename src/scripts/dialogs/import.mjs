@@ -6,7 +6,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 export let ImportDialog;
 
-Hooks.on(
+Hooks.once(
   "i18nInit",
   () =>
     (ImportDialog = class ImportDialog extends (
