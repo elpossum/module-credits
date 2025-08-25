@@ -118,6 +118,9 @@ const config = defineConfig(({ command }) => {
           assetFileNames: "styles/module.css",
           sourcemapExcludeSources: true,
         },
+        watch: {
+          buildDelay: 100,
+        },
       },
       target: "es2022",
     },

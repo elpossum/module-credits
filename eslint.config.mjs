@@ -11,7 +11,6 @@ export default defineConfig([
         game: "readonly",
         $: "readonly",
         ui: "readonly",
-        FormApplication: "readonly",
         SocketInterface: "readonly",
         Dialog: "readonly",
         foundry: "readonly",
