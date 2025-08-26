@@ -12,9 +12,10 @@ export async function addBetterDependencies(app, elem) {
       );
     },
   )[0];
-  recommendedElem.textContent = game.i18n.localize(
-    "MODMANAGE.RecommendedDependencies",
-  );
+  if (recommendedElem)
+    recommendedElem.textContent = game.i18n.localize(
+      "MODMANAGE.RecommendedDependencies",
+    );
 
   // Add tooltips
   dependencies.forEach((dep) => {
@@ -44,7 +45,7 @@ export async function addBetterDependencies(app, elem) {
 
   // Add optional dependencies
   const moduleJson = await foundry.utils
-    .fetchWithTimeout(`modules/${MODULE.ID}/module.json`)
+    .fetchWithTimeout(`modules/${app.root.id}/module.json`)
     .then((res) => res.json());
   const optionalDependencies = moduleJson.relationships.optional;
   relationships.flags?.optional?.forEach((dep) => {
@@ -52,6 +53,7 @@ export async function addBetterDependencies(app, elem) {
       optionalDependencies.push(dep);
     }
   });
+  if (!optionalDependencies || optionalDependencies.length === 0) return;
   app.optionalDependencies = new Map();
   const data = foundry.utils.deepClone(Array.from(optionalDependencies));
   data.forEach((dep) => {
