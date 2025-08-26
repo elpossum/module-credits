@@ -2,6 +2,9 @@ import { MODULE } from "./_module.mjs";
 
 export async function addBetterDependencies(app, elem) {
   const dependencies = elem.querySelectorAll(".form-group.slim");
+  const dependencyIds = Array.from(dependencies).map(
+    (dep) => dep.querySelector("input").name,
+  );
   const relationships = app.root.relationships;
 
   const recommendedElem = Array.from(elem.querySelectorAll("legend")).filter(
@@ -47,9 +50,15 @@ export async function addBetterDependencies(app, elem) {
   const moduleJson = await foundry.utils
     .fetchWithTimeout(`modules/${app.root.id}/module.json`)
     .then((res) => res.json());
-  const optionalDependencies = moduleJson.relationships.optional;
+  const optionalDependencies = [];
+  moduleJson.relationships.optional.forEach((dep) => {
+    if (!dependencyIds.includes(dep.id)) optionalDependencies.push(dep);
+  });
   relationships.flags?.optional?.forEach((dep) => {
-    if (!optionalDependencies.some((d) => d.id === dep.id)) {
+    if (
+      !dependencyIds.includes(dep.id) &&
+      !optionalDependencies.some((d) => d.id === dep.id)
+    ) {
       optionalDependencies.push(dep);
     }
   });
