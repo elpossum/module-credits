@@ -15,6 +15,7 @@ import "../styles/module.css";
 
 // HMR
 import { Load } from "./hmr.mjs";
+import { addBetterDependencies } from "./betterDependencies.mjs";
 
 export const ModuleManagement =
   foundry.applications.sidebar.apps.ModuleManagement;
@@ -75,6 +76,10 @@ Hooks.on("renderModuleManagement", (app, elem) =>
 );
 Hooks.on("renderSettingsConfig", (app, elem) =>
   MMP.renderSettingsConfig(app, elem),
+);
+
+Hooks.on("renderDependencyResolution", (app, elem) =>
+  addBetterDependencies(app, elem),
 );
 
 Handlebars.registerHelper("incIndex", function (value) {

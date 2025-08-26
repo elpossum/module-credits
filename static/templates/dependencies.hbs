@@ -1,0 +1,19 @@
+<fieldset data-relationship="optional">
+  <legend>{{localize "MODMANAGE.OptionalDependencies"}}</legend>
+  <div class="form-group">
+    <p class="hint">{{#if enabling}}
+        {{localize "MODMANAGE.DepOptionalEnable"}}
+      {{else}}
+        {{localize "MODMANAGE.DepDisable"}}
+      {{/if}}
+    </p>
+  </div>
+  {{#each data}}
+    <div class="form-group slim" data-tooltip="{{this.reason}}" aria-describedby="tooltip">
+      <label>{{this.title}}</label>
+      <div class="form-fields">
+        <input type="checkbox" name="{{this.id}}" data-tooltip-text checked></input>
+      </div>
+    </div>
+  {{/each}}
+</fieldset>
