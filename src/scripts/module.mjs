@@ -15,6 +15,7 @@ import {
   isNewerVersion,
   ContextMenu,
 } from "./init.mjs";
+import { hasOptionalDependencies } from "./betterDependencies.mjs";
 
 // DEFINE MODULE CLASS
 export class MMP {
@@ -857,7 +858,6 @@ export class MMP {
     for await (const elemPackage of elem.querySelectorAll(
       ".package-list > li.package",
     )) {
-      //elem.querySelectorAll('.package-list > li.package').forEach((elemPackage) => {
       const moduleKey = elemPackage.dataset.moduleId;
       const moduleData = game.modules.get(moduleKey);
 
@@ -1288,6 +1288,21 @@ export class MMP {
             <i class="fa-solid fa-gear"></i>
           </span>`,
         );
+
+        // Handle if Settings Tag is Clicked
+        elemPackage
+          .querySelector(".tag.settings")
+          .addEventListener("click", async () => {
+            const settingsConfig = await game.settings.sheet.render(true);
+            const settingSheet = settingsConfig.element;
+            const moduleId = elemPackage.dataset.moduleId;
+            const filters = settingSheet.querySelector(
+              `aside[data-application-part="sidebar"] nav.tabs button[data-tab="${moduleId}"]`,
+            );
+
+            settingSheet.classList.add(`${MODULE.ID}-hide-filter-options`);
+            filters.click();
+          });
       }
       // Add Authors Tag
       if (moduleData?.authors.size >= 1) {
@@ -1459,6 +1474,14 @@ export class MMP {
             <i class="fa-solid fa-bug"></i>
           </span>`,
         );
+
+        // Handle if 🐛 Bug Reporter Tag is Clicked
+        elemPackage
+          .querySelector(".tag.issues.bug-reporter")
+          .addEventListener("click", async () => {
+            const moduleId = elemPackage.dataset.moduleId;
+            game.modules.get("bug-reporter").api.bugWorkflow(moduleId);
+          });
       } else if (MMP.getModuleProperty(moduleData.id, "bugs") ?? false) {
         tagContainer.insertAdjacentHTML(
           "beforeend",
@@ -1582,6 +1605,29 @@ export class MMP {
         .addEventListener("change", (event) => {
           elemPackage.classList.toggle("checked", event.target.checked);
         });
+
+      // Add listener if only optional packages
+      const nonOptionalDependencies =
+        (moduleData.relationships.requires?.size || 0) +
+        (moduleData.relationships.recommends?.size || 0);
+      if (nonOptionalDependencies === 0) {
+        const optionalDependencies = await hasOptionalDependencies(
+          moduleData.id,
+          [],
+        );
+        if (optionalDependencies.length > 0) {
+          elemPackage
+            .querySelector('input[type="checkbox"]')
+            .addEventListener("change", () => {
+              const depRes =
+                new foundry.applications.settings.DependencyResolution({
+                  manager: app,
+                  root: moduleData,
+                });
+              depRes.render(true);
+            });
+        }
+      }
     }
 
     // Handle Global Conflicts
@@ -1633,36 +1679,6 @@ export class MMP {
           });
       }
     }
-
-    // Handle if Settings Tag is Clicked
-    elem
-      .querySelectorAll(
-        ".package-list > li.package .package-overview .tag.settings",
-      )
-      .forEach((elemPackage) => {
-        elemPackage.addEventListener("click", async () => {
-          const settingsConfig = await game.settings.sheet.render(true);
-          const settingSheet = settingsConfig.element;
-          const moduleId = elemPackage.closest("li.package").dataset.moduleId;
-          const filters = settingSheet.querySelector(
-            `aside[data-application-part="sidebar"] nav.tabs button[data-tab="${moduleId}"]`,
-          );
-
-          settingSheet.classList.add(`${MODULE.ID}-hide-filter-options`);
-          filters.click();
-        });
-      });
-    // Handle if 🐛 Bug Reporter Tags is Clicked
-    elem
-      .querySelectorAll(
-        ".package-list > li.package .package-overview .tag.issues.bug-reporter",
-      )
-      .forEach((elemPackage) => {
-        elemPackage.addEventListener("click", async () => {
-          const moduleId = elemPackage.closest("li.package").dataset.moduleId;
-          game.modules.get("bug-reporter").api.bugWorkflow(moduleId);
-        });
-      });
 
     // Update Deactivate Modules
     if (

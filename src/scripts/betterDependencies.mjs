@@ -46,22 +46,10 @@ export async function addBetterDependencies(app, elem) {
     }
   });
 
-  // Add optional dependencies
-  const moduleJson = await foundry.utils
-    .fetchWithTimeout(`modules/${app.root.id}/module.json`)
-    .then((res) => res.json());
-  const optionalDependencies = [];
-  moduleJson.relationships?.optional?.forEach((dep) => {
-    if (!currentDependencyIds.includes(dep.id)) optionalDependencies.push(dep);
-  });
-  relationships.flags?.optional?.forEach((dep) => {
-    if (
-      !currentDependencyIds.includes(dep.id) &&
-      !optionalDependencies.some((d) => d.id === dep.id)
-    ) {
-      optionalDependencies.push(dep);
-    }
-  });
+  const optionalDependencies = await hasOptionalDependencies(
+    app.root.id,
+    currentDependencyIds,
+  );
 
   if (optionalDependencies.length === 0) return;
 
@@ -95,4 +83,27 @@ export async function addBetterDependencies(app, elem) {
         });
       });
   }
+}
+
+export async function hasOptionalDependencies(moduleId, currentDependencyIds) {
+  const optionalDependencies = [];
+
+  const moduleJson = await foundry.utils
+    .fetchWithTimeout(`modules/${moduleId}/module.json`)
+    .then((res) => res.json());
+
+  moduleJson.relationships?.optional?.forEach((dep) => {
+    if (!currentDependencyIds.includes(dep.id)) optionalDependencies.push(dep);
+  });
+
+  moduleJson.relationships?.flags?.optional?.forEach((dep) => {
+    if (
+      !currentDependencyIds.includes(dep.id) &&
+      !optionalDependencies.some((d) => d.id === dep.id)
+    ) {
+      optionalDependencies.push(dep);
+    }
+  });
+
+  return optionalDependencies;
 }
