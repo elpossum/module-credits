@@ -1,8 +1,8 @@
 import { MODULE } from "./_module.mjs";
 
 export async function addBetterDependencies(app, elem) {
-  const dependencies = elem.querySelectorAll(".form-group.slim");
-  const dependencyIds = Array.from(dependencies).map(
+  const currentDependencies = elem.querySelectorAll(".form-group.slim");
+  const currentDependencyIds = Array.from(currentDependencies).map(
     (dep) => dep.querySelector("input").name,
   );
   const relationships = app.root.relationships;
@@ -21,7 +21,7 @@ export async function addBetterDependencies(app, elem) {
     );
 
   // Add tooltips
-  dependencies.forEach((dep) => {
+  currentDependencies.forEach((dep) => {
     const moduleId = dep.querySelector("input").name;
     let relationship;
     let found = false;
@@ -51,18 +51,20 @@ export async function addBetterDependencies(app, elem) {
     .fetchWithTimeout(`modules/${app.root.id}/module.json`)
     .then((res) => res.json());
   const optionalDependencies = [];
-  moduleJson.relationships.optional.forEach((dep) => {
-    if (!dependencyIds.includes(dep.id)) optionalDependencies.push(dep);
+  moduleJson.relationships?.optional?.forEach((dep) => {
+    if (!currentDependencyIds.includes(dep.id)) optionalDependencies.push(dep);
   });
   relationships.flags?.optional?.forEach((dep) => {
     if (
-      !dependencyIds.includes(dep.id) &&
+      !currentDependencyIds.includes(dep.id) &&
       !optionalDependencies.some((d) => d.id === dep.id)
     ) {
       optionalDependencies.push(dep);
     }
   });
-  if (!optionalDependencies || optionalDependencies.length === 0) return;
+
+  if (optionalDependencies.length === 0) return;
+
   app.optionalDependencies = new Map();
   const data = foundry.utils.deepClone(Array.from(optionalDependencies));
   data.forEach((dep) => {
