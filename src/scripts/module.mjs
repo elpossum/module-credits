@@ -1615,7 +1615,7 @@ export class MMP {
           moduleData.id,
           [],
         );
-        if (optionalDependencies.length > 0) {
+        if (optionalDependencies.size > 0) {
           elemPackage
             .querySelector('input[type="checkbox"]')
             .addEventListener("change", () => {

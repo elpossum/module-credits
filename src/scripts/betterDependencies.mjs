@@ -51,7 +51,7 @@ export async function addBetterDependencies(app, elem) {
     currentDependencyIds,
   );
 
-  if (optionalDependencies.length === 0) return;
+  if (optionalDependencies.size === 0) return;
 
   app.optionalDependencies = new Map();
   const data = foundry.utils.deepClone(Array.from(optionalDependencies));
@@ -86,24 +86,31 @@ export async function addBetterDependencies(app, elem) {
 }
 
 export async function hasOptionalDependencies(moduleId, currentDependencyIds) {
-  const optionalDependencies = [];
+  const module = game.modules.get(moduleId);
+  if (module.relationships.optional) {
+    return module.relationships.optional;
+  } else {
+    const optionalDependencies = new Set();
 
-  const moduleJson = await foundry.utils
-    .fetchWithTimeout(`modules/${moduleId}/module.json`)
-    .then((res) => res.json());
+    const moduleJson = await foundry.utils
+      .fetchWithTimeout(`modules/${moduleId}/module.json`)
+      .then((res) => res.json());
 
-  moduleJson.relationships?.optional?.forEach((dep) => {
-    if (!currentDependencyIds.includes(dep.id)) optionalDependencies.push(dep);
-  });
+    moduleJson.relationships?.optional?.forEach((dep) => {
+      if (!currentDependencyIds.includes(dep.id)) optionalDependencies.add(dep);
+    });
 
-  moduleJson.relationships?.flags?.optional?.forEach((dep) => {
-    if (
-      !currentDependencyIds.includes(dep.id) &&
-      !optionalDependencies.some((d) => d.id === dep.id)
-    ) {
-      optionalDependencies.push(dep);
-    }
-  });
+    moduleJson.relationships?.flags?.optional?.forEach((dep) => {
+      if (
+        !currentDependencyIds.includes(dep.id) &&
+        !Array.from(optionalDependencies).some((d) => d.id === dep.id)
+      ) {
+        optionalDependencies.add(dep);
+      }
+    });
 
-  return optionalDependencies;
+    module.relationships.optional = optionalDependencies;
+
+    return optionalDependencies;
+  }
 }
