@@ -1,85 +1,42 @@
-<div class="journal-sheet-container">
-  <aside 
-    class="sidebar journal-sidebar directory flexcol"
-    {{#unless IsMultipleItems}}
-      hidden
-    {{/unless}}
-  >
-    <header class="directory-header">
-      <div class="header-search flexrow">
-        <input
-          type="text"
-          name="search"
-          value=""
-          autocomplete="off"
-          placeholder="{{localize 'module-credits.dialog.preview.search'}}"
-        />
-        <a
-          class="action-button collapse-toggle"
-          data-action="toggleCollapse"
-          data-tooltip="{{localize
-            'module-credits.dialog.preview.collapseModeLabel'
-          }}"
-        ><i class="fa-solid fa-caret-right"></i></a>
-      </div>
-    </header>
-    <nav
-      class="pages-list"
-      aria-label="{{localize 'module-credits.dialog.preview.NavLabel'}}"
-      data-tooltip-direction="RIGHT"
-    >
-      <ol class="directory-list scrollable">
-        {{#each items}}
-          <li
-            class="directory-item level1"
-            data-module-id="{{@key}}"
-            data-file-type="{{this.type}}"
-            draggable="true"
-          >
-            <div class="page-heading">
-              <span class="page-number" data-tooltip="{{this.title}}">{{incIndex
-                  @index
-                }}.</span>
-              <span class="page-title">{{this.title}}</span>
-              <span class="page-ownership {{#if this.hasSeen}}observer{{/if}} {{#unless @root.IsGM}}hidden{{/unless}}"><i
-                  class="fa-regular fa-eye{{#unless this.hasSeen}}-slash{{/unless}}"
-                ></i></span>
-            </div>
-          </li>
-        {{/each}}
-      </ol>
+<aside class="sidebar journal-sidebar flexcol" {{#unless IsMultipleItems}} hidden {{/unless}}>
+
+    {{!-- Sidebar Search --}}
+    <search>
+        <input type="search" name="search" autocomplete="off" placeholder="{{ localize 'module-credits.dialog.preview.search' }}"
+               aria-label="{{ 'module-credits.dialog.preview.search' }}">
+        <button type="button" class="inline-control collapse-toggle icon {{ expandMode.icon }}"
+                data-action="toggleSidebar" data-tooltip aria-label="{{ localize expandMode.label }}"></button>
+    </search>
+
+    {{!-- Table of Contents --}}
+    <nav class="toc" data-tooltip-direction="RIGHT">
+        <ol>
+            {{#each toc}}
+
+            {{!-- Pages --}}
+            <li class="{{ tocClass }}" data-page-id="{{ id }}" {{#if hidden}}hidden{{/if}} data-file-type="{{this.type}}">
+                <div class="page-heading" data-action="goToHeading">
+                    <span class="page-index" data-tooltip-text="{{ name }}">{{ number }}</span>
+                    <span class="page-title ellipsis">{{ name }}</span>
+                    {{#if icon}}
+                    <span class="page-ownership {{ icon }}" {{#unless @root.IsGM}}hidden{{/unless}}></span>
+                    {{/if}}
+                </div>
+            </li>
+
+            {{/each}}
+        </ol>
     </nav>
-    <div class="action-buttons flexrow">
-      <button class="create {{#unless @root.IsGM}}hidden{{/unless}}" type="button" data-action="markAsSeen">
-        {{localize "module-credits.dialog.preview.markAsSeen"}}
-      </button>
-      <button
-        class="previous"
-        type="button"
-        data-action="previous"
-        data-tooltip="{{localize 'module-credits.dialog.preview.previousPage'}}"
-        disabled=""
-      >
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-      <button
-        class="next"
-        type="button"
-        data-action="next"
-        data-tooltip="{{localize 'module-credits.dialog.preview.nextPage'}}"
-      >
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-    </div>
-  </aside>
-  <section class="journal-entry-content flexcol">
-    <form class="journal-header">
-      <input class="title" name="name" type="text" value="" placeholder="" />
-    </form>
-    <div class="journal-entry-pages editable">
-      <div class="scrollable">
-        <article class="journal-entry-page text"></article>
-      </div>
-    </div>
-  </section>
-</div>
+
+    {{!-- Page Navigation Buttons --}}
+    <footer class="action-buttons flexrow">
+        <button type="button" class="markAsSeen" data-action="markAsSeen" {{#unless IsGM}}hidden{{/unless}}>
+            <i class="fas fa-eye" inert></i>
+            <span>{{ localize "module-credits.dialog.preview.markAsSeen" }}</span>
+        </button>
+        <button type="button" class="previous icon fas fa-chevron-left" data-action="previousPage" data-tooltip
+                aria-label="{{ localize "JOURNAL.PrevPage" }}"></button>
+        <button type="button" class="next icon fas fa-chevron-right" data-action="nextPage" data-tooltip
+                aria-label="{{ localize "JOURNAL.NextPage" }}"></button>
+    </footer>
+</aside>

@@ -1,16 +1,12 @@
 #module-credits-dialog {
-  &.sheet.journal-entry .sidebar {
-    .action-buttons {
-      justify-content: space-between;
-
-      button.create {
-        margin: 0.5rem;
-      }
+  aside.sidebar {
+    .action-buttons button.markAsSeen {
+      flex: 1;
     }
-  }
 
-  .directory .directory-header .header-search input {
-    margin: 0 0.5rem;
+    input {
+      margin: 0 0.5rem;
+    }
   }
 
   /* .window-content {

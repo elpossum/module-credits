@@ -131,11 +131,7 @@
       },
       "preview": {
         "search": "Search Changelogs",
-        "collapseModeLabel": "Collapse Sidebar",
-        "navLabel": "Table of Contents",
-        "markAsSeen": "Mark as Seen",
-        "previousPage": "Previous Page",
-        "nextPage": "Next Page"
+        "markAsSeen": "Mark as Seen"
       },
       "presets": {
         "title": "Preset Name",

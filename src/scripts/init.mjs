@@ -16,6 +16,7 @@ import "../styles/module.css";
 // HMR
 import { Load } from "./hmr.mjs";
 import { addBetterDependencies } from "./betterDependencies.mjs";
+import { cacheFiles } from "./dialogs/preview.mjs";
 
 export const ModuleManagement =
   foundry.applications.sidebar.apps.ModuleManagement;
@@ -64,6 +65,7 @@ Hooks.once("lib-themer.Ready", (API) => {
 Hooks.once("ready", async () => {
   //await MIGRATE.init();
   MMP.init();
+  cacheFiles();
 });
 
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */

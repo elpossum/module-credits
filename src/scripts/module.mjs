@@ -91,21 +91,32 @@ export class MMP {
 
   // DEFINE API
   static installAPI() {
-    game.modules.get(MODULE.ID).API = {
+    const thisModule = game.modules.get(MODULE.ID);
+    thisModule.API = {
       getContent: async (module, fileType, options = { dir: "modules" }) => {
+        const currentData = thisModule.content[module.id]?.[fileType];
+        if (currentData) return currentData;
         const fileString = `./${options.dir}/${module.id}/${fileType}${fileType.toLowerCase() === "license" ? "" : ".md"}`;
         const fileExists = await foundry.utils.srcExists(fileString);
+        let newData;
 
         if (fileExists == false || fileExists == undefined) {
-          return await this.getGithubMarkdown(module[fileType.toLowerCase()]);
-        }
+          newData = await this.getGithubMarkdown(
+            module[fileType.toLowerCase()],
+          );
+        } else newData = await this.getFile(fileString);
 
-        return await this.getFile(fileString);
+        newData = new showdown.Converter().makeHtml(newData);
+        mergeObject(thisModule.content, {
+          [module.id]: { [fileType]: newData },
+        });
+        return newData;
       },
     };
   }
 
   static init() {
+    game.modules.get(MODULE.ID).content = {};
     this.installAPI();
 
     this.getChangelogs();
@@ -148,23 +159,6 @@ export class MMP {
         throw TypeError(`unable to access ${url}`);
       })
       .then((file) => file)
-      .catch((error) => {
-        MODULE.debug(error);
-        return false;
-      });
-  }
-
-  static async useFetch(url) {
-    return await fetch(url)
-      .then((response) => {
-        if (response.status >= 200 && response.status <= 299) {
-          return response;
-        }
-        throw TypeError("unable to fetch file content");
-      })
-      .then(() => {
-        return url;
-      })
       .catch((error) => {
         MODULE.debug(error);
         return false;
