@@ -374,7 +374,6 @@ export class MMP {
 
   /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
   // F### Your Emoji (Better Title Sorting)
-  // ? Needs to be rewritten to use plain JS
   /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
   static smartLabel(module) {
     // If user has overwritten Module Name, Return Overwrite
@@ -431,7 +430,7 @@ export class MMP {
   }
 
   static screwYourEmoji(elements, titleSelector) {
-    $(elements).each((index, element) => {
+    elements.forEach((element) => {
       let smartLabel = this.smartLabel(
         game.modules.get(element.dataset.moduleId),
       );
@@ -444,29 +443,23 @@ export class MMP {
         const tooltips = smartLabel.join(" / ");
         smartLabel = `${smartLabel.length > 0 ? '<i class="fa-regular fa-arrow-turn-down-right" data-tooltip="' + tooltips + '"></i> ' : ""}${game.modules.get(element.dataset.moduleId).title}`;
       }
-      $(Array.from(element.querySelectorAll(titleSelector)).pop())
-        .contents()
-        .filter(function () {
-          return this.nodeType == 3;
-        })
-        .last()
-        .replaceWith(smartLabel ?? "");
+      element.querySelector(titleSelector).innerHTML = smartLabel ?? "";
 
-      $(element).attr(
+      element.setAttribute(
         "data-sort-title",
         sortLabel.toUpperCase().replace(/[^\w]/gi, ""),
       );
     });
 
     // Sort Elements and Append To parent to Replace Order
-    $(elements)
-      .sort((firstEl, secondEl) => {
-        return $(secondEl).attr("data-sort-title") <
-          $(firstEl).attr("data-sort-title")
+    elements[0].parentElement.append(
+      ...Array.from(elements).sort((firstEl, secondEl) => {
+        return secondEl.getAttribute("data-sort-title") <
+          firstEl.getAttribute("data-sort-title")
           ? 1
           : -1;
-      })
-      .appendTo($(elements).parent());
+      }),
+    );
   }
 
   static async renderModuleManagement(app, elem) {
@@ -493,11 +486,10 @@ export class MMP {
 
     /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
     // F### Your Emoji (Better Title Sorting)
-    // ? Needs to be rewritten to use plain JS
     /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
     MMP.screwYourEmoji(
-      $(elem).find(".package-list .package"),
-      ".package-title .title-group .title, .package-title",
+      elem.querySelectorAll(".package-list .package"),
+      ".package-title .title-group .title",
     );
 
     // Focus on Filter
@@ -543,69 +535,68 @@ export class MMP {
       elem
         .querySelector('search.flexrow button[data-action="import"]')
         .addEventListener("click", () => {
-          $('<input type="file">')
-            .on("change", (event) => {
-              const fileData = event.target.files[0];
-              // Check if User Selected a File.
-              if (!fileData) return false;
-              // Check if User Selected JSON File
-              if (fileData.type != "application/json") {
+          const input = document.createElement("input");
+          input.type = "file";
+          input.addEventListener("change", (event) => {
+            const fileData = event.target.files[0];
+            // Check if User Selected a File.
+            if (!fileData) return false;
+            // Check if User Selected JSON File
+            if (fileData.type != "application/json") {
+              ui.notifications.error(
+                `<strong>${MODULE.TITLE}</strong> Please select a JSON file.`,
+              );
+              return false;
+            }
+
+            // Read File Data
+            foundry.utils.readTextFromFile(fileData).then(async (response) => {
+              try {
+                // Convert Response into JSON
+                const responseJSON = JSON.parse(response);
+                let moduleData = {};
+                let importType = MODULE.ID;
+
+                // Check if Import is for TidyUI
+                if (Object.hasOwn(responseJSON, "activeModules") ?? false) {
+                  importType = "tidy-ui_game-settings";
+                  responseJSON.activeModules.forEach((module) => {
+                    moduleData[module.id] = {
+                      title: module.title,
+                      version: module.version,
+                      settings: {
+                        client: undefined,
+                        world: undefined,
+                      },
+                    };
+                  });
+                } else if (
+                  Object.hasOwn(
+                    responseJSON?.[Object.keys(responseJSON)[0]],
+                    "title",
+                  ) ??
+                  false
+                ) {
+                  moduleData = responseJSON;
+                } else {
+                  ui.notifications.error(
+                    `<strong>${MODULE.TITLE}</strong> Unable to determine how to load file.`,
+                  );
+                  return false;
+                }
+
+                // Show Import Dialog
+                new ImportDialog({ moduleData, importType }).render(true);
+              } catch (error) {
+                MODULE.error("Failed to read selected file", error);
                 ui.notifications.error(
-                  `<strong>${MODULE.TITLE}</strong> Please select a JSON file.`,
+                  `<strong>${MODULE.TITLE}</strong> Failed to read selected file.`,
                 );
                 return false;
               }
-
-              // Read File Data
-              foundry.utils
-                .readTextFromFile(fileData)
-                .then(async (response) => {
-                  try {
-                    // Convert Response into JSON
-                    const responseJSON = JSON.parse(response);
-                    let moduleData = {};
-                    let importType = MODULE.ID;
-
-                    // Check if Import is for TidyUI
-                    if (Object.hasOwn(responseJSON, "activeModules") ?? false) {
-                      importType = "tidy-ui_game-settings";
-                      responseJSON.activeModules.forEach((module) => {
-                        moduleData[module.id] = {
-                          title: module.title,
-                          version: module.version,
-                          settings: {
-                            client: undefined,
-                            world: undefined,
-                          },
-                        };
-                      });
-                    } else if (
-                      Object.hasOwn(
-                        responseJSON?.[Object.keys(responseJSON)[0]],
-                        "title",
-                      ) ??
-                      false
-                    ) {
-                      moduleData = responseJSON;
-                    } else {
-                      ui.notifications.error(
-                        `<strong>${MODULE.TITLE}</strong> Unable to determine how to load file.`,
-                      );
-                      return false;
-                    }
-
-                    // Show Import Dialog
-                    new ImportDialog({ moduleData, importType }).render(true);
-                  } catch (error) {
-                    MODULE.error("Failed to read selected file", error);
-                    ui.notifications.error(
-                      `<strong>${MODULE.TITLE}</strong> Failed to read selected file.`,
-                    );
-                    return false;
-                  }
-                });
-            })
-            .trigger("click");
+            });
+          });
+          input.click();
           //new ImportDialog({}).render(true);
         });
 
@@ -1785,7 +1776,10 @@ export class MMP {
     }
 
     // HIDE TOOLTIPS WHEN USER SCROLLS IN MODULE LIST
-    $("#module-management .package-list").on("scroll", hideAll);
+    document
+      .getElementById("module-management")
+      .querySelector(".package-list")
+      .addEventListener("scroll", hideAll);
 
     //new ModuleManagement().render(true);
     app.setPosition();
