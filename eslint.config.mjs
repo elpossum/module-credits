@@ -9,7 +9,6 @@ export default defineConfig([
       globals: {
         ...globals.browser,
         game: "readonly",
-        $: "readonly",
         ui: "readonly",
         SocketInterface: "readonly",
         Dialog: "readonly",
@@ -19,6 +18,7 @@ export default defineConfig([
         Handlebars: "readonly",
         libWrapper: "readonly",
         socketlib: "readonly",
+        CONST: "readonly",
       },
     },
   },
