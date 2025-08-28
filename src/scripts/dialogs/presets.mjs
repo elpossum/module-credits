@@ -14,10 +14,8 @@ Hooks.once(
       HandlebarsApplicationMixin(ApplicationV2)
     ) {
       static DEFAULT_OPTIONS = {
-        title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.presets")}`,
         id: `${MODULE.ID}-preset-dialog`,
         classes: ["dialog"],
-        template: `modules/${MODULE.ID}/templates/presets.hbs`,
         window: {
           resizable: false,
           title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.presets")}`,

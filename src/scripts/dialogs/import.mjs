@@ -34,7 +34,6 @@ Hooks.once(
       }
 
       static DEFAULT_OPTIONS = {
-        title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.import")}`,
         id: `${MODULE.ID}-import-dialog`,
         classes: ["dialog"],
         tag: "form",

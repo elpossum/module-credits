@@ -50,7 +50,6 @@ Hooks.once(
       }
 
       static DEFAULT_OPTIONS = {
-        title: `${MODULE.TITLE} - ${MODULE.localize("dialog.titles.export")}`,
         id: `${MODULE.ID}-export-dialog`,
         classes: ["dialog"],
         window: {
