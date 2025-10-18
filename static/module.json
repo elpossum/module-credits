@@ -79,7 +79,6 @@
     }
   },
   "esmodules": ["/bundle.min.mjs"],
-  "scripts": [],
   "styles": ["/styles/module.css"],
   "languages": [
     {
