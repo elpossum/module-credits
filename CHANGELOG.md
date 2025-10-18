@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 3.0.0 - Foundry v13 Compatibility
+
+- Rewrite all AppV1 as AppV2
+- Update for v13 Foundry API
+
 ## Version 2.2.3 - Totally a Real Version
 
 - Added an invisible feature that nobody will ever notice, but hey, at least it's something, right?
