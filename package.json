@@ -13,7 +13,7 @@
     "fs-extra": "^11.3.1",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "vite": "^7.1.2",
+    "vite": "^7.1.9",
     "vite-plugin-static-copy": "^3.1.1"
   },
   "dependencies": {
